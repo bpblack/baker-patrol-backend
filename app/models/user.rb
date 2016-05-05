@@ -2,10 +2,16 @@ class User < ApplicationRecord
   has_secure_password
   has_many :roster_spots
   has_many :teams, through: :roster_spots
-  has_many :patrols, -> { 
-    joins(:duty_day, :patrol_responsibility).
-      select('patrols.id, duty_days.date, patrols.patrol_responsibility_id, patrol_responsibilities.name, patrol_responsibilities.version') 
-  }
+  has_many :patrols#, -> { 
+  #  joins(:duty_day, :patrol_responsibility).
+  #    select('patrols.id,'\
+  #           'duty_days.date,'\
+  #           'duty_days.season_id,'\
+  #           'patrols.patrol_responsibility_id,'\
+  #           'patrol_responsibilities.name,'\
+  #           'patrol_responsibilities.version,'\
+  #           '(case when duty_days.date < current_date then false else true end) as swappable') 
+  #}
   validates :password, length: {minimum: 8}, format: { with: /\A[[:alnum:][:punct:]]{8,72}\z/ }
   validates :name, presence: true
 

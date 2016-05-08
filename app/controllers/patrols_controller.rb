@@ -4,7 +4,7 @@ class PatrolsController < ApplicationController
   def index
     if params[:user_id] 
       @patrols = Patrol.joins(:duty_day, :patrol_responsibility).select(
-          'patrols.id,' \
+          'patrols.id,'\
           'patrols.duty_day_id,'\
           'duty_days.date,'\
           'duty_days.season_id,'\

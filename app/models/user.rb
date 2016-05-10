@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  rolify
   has_secure_password
   has_many :roster_spots
   has_many :teams, through: :roster_spots

@@ -42,12 +42,16 @@ GEM
     bcrypt (3.1.11)
     builder (3.2.2)
     byebug (8.2.5)
+    coderay (1.1.1)
     concurrent-ruby (1.0.2)
     erubis (2.7.0)
     ffi (1.9.10)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
     i18n (0.7.0)
+    jbuilder (2.4.1)
+      activesupport (>= 3.0.0, < 5.1)
+      multi_json (~> 1.2)
     json (1.8.3)
     jwt (1.5.4)
     knock (1.4.2)
@@ -67,10 +71,23 @@ GEM
     mime-types-data (3.2016.0221)
     mini_portile2 (2.0.0)
     minitest (5.8.4)
+    multi_json (1.12.0)
     nio4r (1.2.1)
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
     pg (0.18.4)
+    pry (0.10.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    pry-byebug (3.3.0)
+      byebug (~> 8.0)
+      pry (~> 0.10)
+    pry-doc (0.8.0)
+      pry (~> 0.9)
+      yard (~> 0.8)
+    pry-rails (0.3.4)
+      pry (>= 0.9.10)
     puma (3.4.0)
     rack (2.0.0.rc1)
       json
@@ -107,6 +124,8 @@ GEM
     rb-fsevent (0.9.7)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
+    rolify (5.1.0)
+    slop (3.6.0)
     spring (1.7.1)
     spring-watcher-listen (2.0.0)
       listen (>= 2.7, < 4.0)
@@ -125,19 +144,26 @@ GEM
     websocket-driver (0.6.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
+    yard (0.8.7.6)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  bcrypt
+  bcrypt (~> 3.1.7)
   byebug
+  jbuilder (~> 2.0)
   knock
   listen (~> 3.0.5)
   pg (~> 0.18)
+  pry
+  pry-byebug
+  pry-doc
+  pry-rails
   puma
   rack-cors
   rails (>= 5.0.0.beta3, < 5.1)
+  rolify
   spring
   spring-watcher-listen (~> 2.0.0)
   tzinfo-data

@@ -11,7 +11,7 @@ json.patrols @patrols do |p|
       json.(p.duty_day.team, :id, :name)
     end
   end
-  json.responsiblity do |json|
+  json.responsibility do |json|
     json.(p.patrol_responsibility, :id, :name, :version)
   end
 end

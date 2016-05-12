@@ -9,4 +9,4 @@ json.patrols @duty_day.patrols.sort_by { |p| p.patrol_responsibility.name }.rota
   json.responsibility do |json|
     json.(p.patrol_responsibility, :id, :name, :version)
   end
-end 
+end

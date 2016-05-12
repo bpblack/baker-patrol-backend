@@ -2,7 +2,7 @@ class User < ApplicationRecord
   rolify
   has_secure_password
   has_many :roster_spots
-  has_many :teams, through: :roster_spots
+  has_many :seasons, -> {order(start: :desc).distinct}, through: :roster_spots
   has_many :patrols
   validates :password, length: {minimum: 8}, format: { with: /\A[[:alnum:][:punct:]]{8,72}\z/ }
   validates :name, presence: true

@@ -18,6 +18,6 @@ class CustomClaimsController < ApplicationController
       )
     )
     @custom_claims = JWT.encode(claims.merge(payload), Knock.token_secret_signature_key.call, Knock.token_signature_algorithm)
-    render 'custom_claims/index.json.jbuilder', status: :created
+    render json: { extra: @custom_claims}, status: :created
   end
 end

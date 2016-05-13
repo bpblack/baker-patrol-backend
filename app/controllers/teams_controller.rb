@@ -3,8 +3,8 @@ class TeamsController < ApplicationController
 
   def index 
     if (params[:user_id])
-      @team = Team.includes(:duty_days).joins(:roster_spots).where(roster_spots: {season_id: params[:season_id], user_id: params[:user_id]}, duty_days: {season_id: params[:season_id]}).take
-      @team.roster_spots.includes(:user)
+      rs = RosterSpot.where(user_id: params[:user_id], season_id: params[:season_id]).first
+      @team = Team.includes(:duty_days, {roster_spots: :user}).where(roster_spots: {season_id: params[:season_id]}, duty_days: {season_id: params[:season_id]}).find(rs.team_id)
       render 'teams/show.json.jbuilder', status: :ok
     end
   end

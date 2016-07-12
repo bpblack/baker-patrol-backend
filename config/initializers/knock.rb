@@ -1,5 +1,8 @@
 Knock.setup do |config|
 
+  ## [DEPRECATED]
+  ## This is deprecated in favor of `User.from_token_request`.
+  ##
   ## User handle attribute
   ## ---------------------
   ##
@@ -8,6 +11,9 @@ Knock.setup do |config|
   ## Default:
   # config.handle_attr = :email
 
+  ## [DEPRECATED]
+  ## This is deprecated in favor of `User.from_token_request`.
+  ##
   ## Current user retrieval from handle when signing in
   ## --------------------------------------------------
   ##
@@ -18,11 +24,16 @@ Knock.setup do |config|
   ## AuthTokenController parameters. It also uses the same variable to enforce
   ## permitted values in the controller.
   ##
-  ## You must raise ActiveRecord::RecordNotFound if the resource cannot be retrieved.
+  ## You must raise an exception if the resource cannot be retrieved.
+  ## The type of the exception is configured in config.not_found_exception_class_name,
+  ## and it is ActiveRecord::RecordNotFound by default
   ##
   ## Default:
   # config.current_user_from_handle = -> (handle) { User.find_by! Knock.handle_attr => handle }
 
+  ## [DEPRECATED]
+  ## This is depreacted in favor of `User.from_token_payload`.
+  ##
   ## Current user retrieval when validating token
   ## --------------------------------------------
   ##
@@ -30,7 +41,9 @@ Knock.setup do |config|
   ## By default, it assumes you have a model called `User` and that
   ## the user_id is stored in the 'sub' claim.
   ##
-  ## You must raise ActiveRecord::RecordNotFound if the resource cannot be retrieved.
+  ## You must raise an exception if the resource cannot be retrieved.
+  ## The type of the exception is configured in config.not_found_exception_class_name,
+  ## and it is ActiveRecord::RecordNotFound by default
   ##
   ## Default:
   # config.current_user_from_token = -> (claims) { User.find claims['sub'] }
@@ -39,7 +52,8 @@ Knock.setup do |config|
   ## Expiration claim
   ## ----------------
   ##
-  ## How long before a token is expired.
+  ## How long before a token is expired. If nil is provided, token will
+  ## last forever.
   ##
   ## Default:
   config.token_lifetime = 1.hour
@@ -83,4 +97,12 @@ Knock.setup do |config|
   ##
   ## Default:
   # config.token_public_key = nil
+
+  ## Exception Class
+  ## ---------------
+  ##
+  ## Configure the exception to be used when user cannot be found.
+  ##
+  ## Default:
+  # config.not_found_exception_class_name = 'ActiveRecord::RecordNotFound'
 end

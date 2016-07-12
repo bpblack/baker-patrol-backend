@@ -1,5 +1,5 @@
 class CustomClaimsController < ApplicationController
-  before_action :authenticate
+  before_action :authenticate_user
   
   def index
     token = params[:token] || request.headers['Authorization'].split.last

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160509043352) do
+ActiveRecord::Schema.define(version: 20160626181600) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,9 +86,12 @@ ActiveRecord::Schema.define(version: 20160509043352) do
     t.integer  "user_id"
     t.integer  "patrol_id"
     t.string   "reason"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.integer  "sub_id"
+    t.boolean  "accepted",   default: false
     t.index ["patrol_id"], name: "index_substitutions_on_patrol_id", using: :btree
+    t.index ["sub_id"], name: "index_substitutions_on_sub_id", using: :btree
     t.index ["user_id"], name: "index_substitutions_on_user_id", using: :btree
   end
 
@@ -128,4 +131,5 @@ ActiveRecord::Schema.define(version: 20160509043352) do
   add_foreign_key "roster_spots", "users"
   add_foreign_key "substitutions", "patrols"
   add_foreign_key "substitutions", "users"
+  add_foreign_key "substitutions", "users", column: "sub_id"
 end

@@ -4,8 +4,14 @@ class User < ApplicationRecord
   has_many :roster_spots
   has_many :seasons, -> {order(start: :desc).distinct}, through: :roster_spots
   has_many :patrols
+  has_many :substitutes, class_name: 'Substitution', foreign_key: :user_id
+  has_many :substitutions, class_name: 'Substitution', foreign_key: :sub_id
   validates :password, length: {minimum: 8}, format: { with: /\A[[:alnum:][:punct:]]{8,72}\z/ }
   validates :name, presence: true
+
+  scope :sub_email_list, -> (ignore_ids, season_id) {
+    joins(:seasons).where.not(id: ignore_ids).where(seasons: {id: season_id}).pluck(:email)
+  }
 
   def send_password_reset
     generate_token(:password_reset_token)

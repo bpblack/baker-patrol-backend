@@ -1,5 +1,5 @@
 class TeamsController < ApplicationController
-  before_action :authenticate
+  before_action :authenticate_user
 
   def index 
     if (params[:user_id])

@@ -1,21 +1,32 @@
 Rails.application.routes.draw do
-  get 'custom_claims/index'
+  get 'custom_claims/index'                             #TODO: delete
 
   scope 'api' do
-    mount Knock::Engine => '/knock' 
+    post 'user_token' => 'user_token#create'
     resources :password_resets
     resources :users do
       resources :seasons, only: [] do
-        resources :patrols, only: [:index]
-        resources :teams, only: [:index]
+        resources :patrols, only: [:index]              #user patrols for a season
+        resources :teams, only: [:index]                #user team for a season
+        resources :substitutions, only: [:index]        #user sub history for a season
       end
-      resources :custom_claims, only: [:index]
+      resources :custom_claims, only: [:index]          #TODO: delete
+      resources :substitutions, only: [:index]          #user subs for current season
+    end
+    resources :patrols, only: [] do
+      resources :substitutions, only: [:create]         #create a sub for a given patrol
     end
     #admin functionality
-    #resources :seasons,only: [] do
-    #  resources :teams, only: [:index, :show]
-    #end
-    resources :duty_days, only: [:index, :show]
+    scope 'admin' do
+      resources :patrols, only: [] do
+        resources :substitutions, only: [:index]        #patrol_sub history
+      end
+      #resources :seasons,only: [] do
+      #  resources :teams, only: [:index, :show]
+      #end
+    end
+    resources :duty_days, only: [:index, :show]         #list duty days and get duty day details
+    resources :substitutions, only: [:update, :destroy] #assign or delete a sub request 
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 

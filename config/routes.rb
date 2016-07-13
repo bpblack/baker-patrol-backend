@@ -26,7 +26,14 @@ Rails.application.routes.draw do
       #end
     end
     resources :duty_days, only: [:index, :show]         #list duty days and get duty day details
-    resources :substitutions, only: [:update, :destroy] #assign or delete a sub request 
+    resources :substitutions, only: [:destroy] do       #delete a sub request
+      member do
+        patch 'assign'                                  #assign the request to a posted sub id
+        patch 'accept'
+        patch 'reject'                                  #reject the assigned sub with a posted message
+        post  'remind'                                  #create a new reminder email
+      end
+    end 
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 

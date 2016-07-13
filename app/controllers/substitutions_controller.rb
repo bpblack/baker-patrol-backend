@@ -27,68 +27,79 @@ class SubstitutionsController < ApplicationController
     # test that patrol owned by current user or current user is admin
     if params[:patrol_id]
       patrol = Patrol.includes(:duty_day, :user, :patrol_responsibility).find(params[:patrol_id])
-      substitution = Substitution.new(user_id: patrol.user_id, patrol: patrol, reason: params[:reason])
-      authorize substitution #current user must match patrol user id or be an admin
-      substitution.save!
+      @substitution = Substitution.new(user_id: patrol.user_id, patrol: patrol, reason: params[:reason])
+      authorize @substitution #current user must match patrol user id, be an admin, or be the duty day team leader
+      @substitution.save!
       ignores = patrol.duty_day.patrols.pluck(:user_id)
       emails = User.sub_email_list(ignores, patrol.duty_day.season_id)
-      SubstitutionMailer.request_sub(substitution, emails, params[:message]).deliver_now 
+      SubstitutionMailer.request_sub(@substitution, emails, params[:message]).deliver_now 
       head :no_content
     else
       render nothing: true, status: :bad_request
     end
   end
 
-  def update
-    substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
-    authorize substitution #current user must either be the owner, the sub, or an admin
-    if params[:assigned_sub_id]
-      assign_sub(substitution,  User.find(params[:assigned_sub_id]))
-    elsif params[:accept]
-      accept_sub(substitution, ActiveModel::Type::Boolean.new.cast(params[:accept]))
+  def assign
+    @substitution = Substitution.includes(:user, {patrol: :duty_day}).find(params[:id])
+    authorize @substitution #user must be an admin, the requesting patroller, or the duty day team leader
+    assigned_sub = User.find(params[:assigned_id])
+    @substitution.update!(sub: assigned_sub)
+    SubstitutionMailer.assign_sub(@substitution).deliver_now
+    head :no_content
+  end
+
+  def accept
+    @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
+    authorize @substitution #user must be admin or the sub
+    @substitution.update(accepted: true)
+    @substitution.patrol.update(user_id: @substitution.sub_id)
+    SubstitutionMailer.accept_sub_request(@substitution).deliver_now
+    head :no_content
+  end
+
+  def reject
+    @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
+    authorize @substitution #user must be admin or the sub
+    SubstitutionMailer.reject_sub_request(@substitution, params[:message]).deliver_now
+    @substitution.update(sub: nil)
+  end
+
+  def remind
+    @substitution = Substitution.includes(:user, {patrol: :duty_day}).find(params[:id])
+    authorize @substitution #user must be admin, team leader, or the requesting patroller
+    if @substitution.completed?
+      render json: {error: "Can't send a a reminder email for a request that is complete."}, status: :bad_request
+    else
+      ignores = @substitution.patrol.duty_day.patrols.pluck(:user_id)
+      emails = User.sub_email_list(ignores, @substitution.patrol.duty_day.season_id)
+      SubstitutionMailer.remind(@substitution, emails, params[:message]).deliver_now
+      head :no_content
     end
   end
 
   def destroy
-    sub = Substitution.includes({patrol: :duty_day}).find(params[:id])
-    authorize sub #current user must be the owner or an admin
-    sub.destroy!
+    @substitution = Substitution.includes({patrol: :duty_day}).find(params[:id])
+    authorize @substitution #current user must be the owner, an admin, or duty day team leader
+    @substitution.destroy!
     head :no_content
   end
 
   private
-  def assign_sub(substitution, assigned_sub)
-    sub_request.update!(sub: assigned_sub)
-    SubstitutionMailer.assign_sub(substitution).deliver_now
-    head :no_content
-  end
-
-  def accept_sub(substitution, accept)
-    if accept
-      substitution.update(accepted: true)
-      substitution.patrol.update(user_id: sub.sub_id)
-      SubstitutionMailer.accept_sub_request(substitution).deliver_now
-    else
-      SubstitutionMailer.reject_sub_request(substitution).deliver_now
-      substitution.update(sub: nil)
-    end
-    head :no_content
-  end
 
   def sub_not_found(exception)
-    render json: {error: "No #{exception.model} found for #{exception.id}"}, status: :not_found
+    render json: {error: exception.to_s}, status: :not_found
   end
 
-  def sub_invalid(exception)
-    render json: {error: exception.errors}, status: :bad_request 
+  def sub_invalid
+    render json: {error: @substitution.errors.values.join(', ')}, status: :bad_request 
   end
 
-  def sub_not_destroyed(exception)
-    render json: {error: exception.errors}, status: :bad_request
+  def sub_not_destroyed
+    render json: {error: @substitution.errors.values.join(', ')}, status: :bad_request
   end
 
-  def not_authorized
-    render json: {error: 'Not authorized to perform action.'}, status: :not_authorized
+  def user_not_authorized
+    render json: {error: 'Not authorized to perform action.'}, status: :unauthorized
   end
 
 end

@@ -5,11 +5,11 @@ class Substitution < ApplicationRecord
 
   validates :patrol, presence: true
   validate  :patrol_date_cannot_be_in_past
-  validate  :sub_is_not_patroling_on_same_duty_day
+  validate  :sub_is_not_patrolling_on_same_duty_day
   validate  :sub_is_active_for_duty_day_season
   validates_uniqueness_of :patrol_id, scope: :user_id
 
-  before_destroy :substitution_final?
+  before_destroy :substitution_completed?
 
   scope :user_subs, -> (user_id, season_id, is_sub:, is_assignable: false) {
     where_conds = {user_id: user_id}
@@ -28,6 +28,10 @@ class Substitution < ApplicationRecord
     includes(incs).joins(:patrol).merge(Patrol.season_duty_days_ordered(season_id)).select('substitutions.*, duty_days.date').where(where_sql, where_conds)
   }
 
+  def completed?
+    accepted || patrol.duty_day.date < Date.today
+  end
+
   private
 
   def patrol_date_cannot_be_in_past
@@ -43,15 +47,15 @@ class Substitution < ApplicationRecord
   end
 
   def sub_is_active_for_duty_day_season
-    unless sub.roster_spots.exists?(['season_id = ?', patrol.duty_day.season_id])
+    unless sub.nil? || sub.roster_spots.exists?(['season_id = ?', patrol.duty_day.season_id])
       errors.add(:inactive_sub, "Cannot add a substitute patroller who is not active for the duty day's season")
     end
   end
 
-  def substitution_final?
-    if accepted || patrol.duty_day.date < Date.today
+  def substitution_completed?
+    if completed?
       errors.add(:substitution_final, 'Cannot delete a substitution request that is accepted or in the past') 
-      return false
+      throw :abort
     end
   end
 end

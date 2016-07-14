@@ -25,4 +25,9 @@ class User < ApplicationRecord
       self[column] = SecureRandom.urlsafe_base64
     end while User.exists?(column => self[column])
   end
+  
+  def self.from_token_payload payload
+    self.find(payload["sub"])
+  end
+
 end

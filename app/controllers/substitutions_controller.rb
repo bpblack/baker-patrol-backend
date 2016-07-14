@@ -1,9 +1,7 @@
 class SubstitutionsController < ApplicationController
   before_action :authenticate_user
-  rescue_from ActiveRecord::RecordNotFound, with: :sub_not_found
   rescue_from ActiveRecord::RecordInvalid, with: :sub_invalid
   rescue_from ActiveRecord::RecordNotDestroyed, with: :sub_not_destroyed 
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   def index
     if params[:user_id].present?
@@ -86,20 +84,12 @@ class SubstitutionsController < ApplicationController
 
   private
 
-  def sub_not_found(exception)
-    render json: {error: exception.to_s}, status: :not_found
-  end
-
   def sub_invalid
     render json: {error: @substitution.errors.values.join(', ')}, status: :bad_request 
   end
 
   def sub_not_destroyed
     render json: {error: @substitution.errors.values.join(', ')}, status: :bad_request
-  end
-
-  def user_not_authorized
-    render json: {error: 'Not authorized to perform action.'}, status: :unauthorized
   end
 
 end

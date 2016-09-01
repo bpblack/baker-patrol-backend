@@ -35,6 +35,10 @@ class SubstitutionPolicy < ApplicationPolicy
     user.id == record.user_id or user_is_admin_or_duty_day_team_leader?
   end
 
+  def assignable?
+    user.id == record.user_id or user_is_admin_or_duty_day_team_leader?
+  end
+
   private
 
   def user_is_admin_or_duty_day_team_leader?

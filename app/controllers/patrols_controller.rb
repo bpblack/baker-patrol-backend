@@ -8,4 +8,11 @@ class PatrolsController < ApplicationController
     end
     #render json: {patrols: @patrols}, status: :ok
   end
+
+  def assignable
+    patrol = Patrol.includes(:user, :duty_day).find(params[:id])
+    ignores = patrol.duty_day.patrols.pluck(:user_id)
+    @assignable = User.subbable(ignores, patrol.duty_day.season_id)
+    render 'patrols/assignable.json.jbuilder', status: :ok
+  end
 end

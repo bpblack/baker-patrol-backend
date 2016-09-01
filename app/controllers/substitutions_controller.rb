@@ -27,10 +27,17 @@ class SubstitutionsController < ApplicationController
       patrol = Patrol.includes(:duty_day, :user, :patrol_responsibility).find(params[:patrol_id])
       @substitution = Substitution.new(user_id: patrol.user_id, patrol: patrol, reason: params[:reason])
       authorize @substitution #current user must match patrol user id, be an admin, or be the duty day team leader
+      if params[:assigned_id]
+        @substitution.sub_id = params[:assigned_id]
+      end
       @substitution.save!
-      ignores = patrol.duty_day.patrols.pluck(:user_id)
-      emails = User.sub_email_list(ignores, patrol.duty_day.season_id)
-      SubstitutionMailer.request_sub(@substitution, emails, params[:message]).deliver_now 
+      if @substitution.sub_id.nil?
+        ignores = patrol.duty_day.patrols.pluck(:user_id)
+        emails = User.sub_email_list(ignores, patrol.duty_day.season_id)
+        SubstitutionMailer.request_sub(@substitution, emails, params[:message]).deliver_now
+      else
+         SubstitutionMailer.assign_sub(@substitution).deliver_now
+      end
       head :no_content
     else
       render nothing: true, status: :bad_request
@@ -49,8 +56,10 @@ class SubstitutionsController < ApplicationController
   def accept
     @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
     authorize @substitution #user must be admin or the sub
-    @substitution.update(accepted: true)
-    @substitution.patrol.update(user_id: @substitution.sub_id)
+    Substitution.transaction do
+      @substitution.update!(accepted: true)
+      @substitution.patrol.update!(user_id: @substitution.sub_id)
+    end
     SubstitutionMailer.accept_sub_request(@substitution).deliver_now
     head :no_content
   end
@@ -59,17 +68,21 @@ class SubstitutionsController < ApplicationController
     @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
     authorize @substitution #user must be admin or the sub
     SubstitutionMailer.reject_sub_request(@substitution, params[:message]).deliver_now
-    @substitution.update(sub: nil)
+    @substitution.update!(sub: nil)
   end
 
   def remind
-    @substitution = Substitution.includes(:user, {patrol: :duty_day}).find(params[:id])
+    @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
     authorize @substitution #user must be admin, team leader, or the requesting patroller
     if @substitution.completed?
       render json: {error: "Can't send a a reminder email for a request that is complete."}, status: :bad_request
     else
-      ignores = @substitution.patrol.duty_day.patrols.pluck(:user_id)
-      emails = User.sub_email_list(ignores, @substitution.patrol.duty_day.season_id)
+      if @substitution.sub.nil?
+        ignores = @substitution.patrol.duty_day.patrols.pluck(:user_id)
+        emails = User.sub_email_list(ignores, @substitution.patrol.duty_day.season_id)
+      else
+        emails = @substitution.sub.email
+      end
       SubstitutionMailer.remind(@substitution, emails, params[:message]).deliver_now
       head :no_content
     end

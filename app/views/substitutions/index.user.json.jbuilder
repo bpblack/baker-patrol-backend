@@ -9,7 +9,17 @@ json.requests @requests do |r|
   end
 end
 json.substitutions @substitutions do |s|
-  json.(s, :id, :date, :accepted, :reason) #date was joined to record
-  json.sub_for_id s.user.id
-  json.sub_for_name s.user.name
+  json.(s, :id, :accepted, :reason) #date was joined to record
+  json.duty_day do |json|
+    json.id s.duty_day_id
+    json.date s.date
+  end
+  json.sub_for do |json|
+    json.id s.user.id
+    json.name s.user.name
+  end
+  json.responsibility do |json|
+    json.name s.patrol.patrol_responsibility.name
+    json.version s.patrol.patrol_responsibility.version
+  end      
 end

@@ -13,6 +13,10 @@ class User < ApplicationRecord
     joins(:seasons).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?)', season_id).pluck(:email)
   }
 
+  scope :subbable, -> (ignore_ids, season_id) {
+    joins(:seasons).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?)', season_id)
+  }
+
   def send_password_reset
     generate_token(:password_reset_token)
     self.password_reset_sent_at = Time.zone.now

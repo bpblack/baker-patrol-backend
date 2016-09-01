@@ -7,7 +7,8 @@ class Substitution < ApplicationRecord
   validate  :patrol_date_cannot_be_in_past
   validate  :sub_is_not_patrolling_on_same_duty_day
   validate  :sub_is_active_for_duty_day_season
-  validates_uniqueness_of :patrol_id, scope: :user_id
+  #validates_uniqueness_of :patrol_id, scope: :user_id
+  validate  :patrol_has_no_existing_open_subs, on: :create
 
   before_destroy :substitution_completed?
 
@@ -25,7 +26,7 @@ class Substitution < ApplicationRecord
       where_conds[:today] = Date.today
       where_sql += ' AND substitutions.accepted = :accepted AND duty_days.date > :today'
     end
-    includes(incs).joins(:patrol).merge(Patrol.season_duty_days_ordered(season_id)).select('substitutions.*, duty_days.date').where(where_sql, where_conds)
+    includes(incs).joins(:patrol).merge(Patrol.season_duty_days_ordered(season_id)).select('substitutions.*, duty_days.date, duty_days.id as duty_day_id').where(where_sql, where_conds)
   }
 
   def completed?
@@ -49,6 +50,12 @@ class Substitution < ApplicationRecord
   def sub_is_active_for_duty_day_season
     unless sub.nil? || sub.roster_spots.exists?(['season_id = ?', patrol.duty_day.season_id])
       errors.add(:inactive_sub, "Cannot add a substitute patroller who is not active for the duty day's season")
+    end
+  end
+
+  def patrol_has_no_existing_open_subs
+    if patrol.substitutions.exists?(['accepted = ?', false])
+      errors.add(:open_request, 'Cannot add a sub request to a patrol that already has an open request')
     end
   end
 

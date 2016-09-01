@@ -12,9 +12,15 @@ Rails.application.routes.draw do
       end
       resources :custom_claims, only: [:index]          #TODO: delete
       resources :substitutions, only: [:index]          #user subs for current season
+      member do
+        get 'extra'
+      end
     end
     resources :patrols, only: [] do
       resources :substitutions, only: [:create]         #create a sub for a given patrol
+      member do
+        get 'assignable'
+      end
     end
     #admin functionality
     scope 'admin' do

@@ -5,6 +5,7 @@ json.patrols @patrols do |p|
   else 
     json.swappable true
   end
+  json.pending_substitution p.pending_substitution
   json.duty_day do |json|
     json.(p.duty_day, :id, :season_id, :date)
     json.team do |json|

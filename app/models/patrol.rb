@@ -12,6 +12,12 @@ class Patrol < ApplicationRecord
     includes({duty_day: :team}, {substitutions: [:user, :sub]}, :patrol_responsibility).find(patrol_id)
   }
   scope :season_duty_days_ordered, -> (season_id) {
-    joins(:duty_day).where(duty_days: {season_id: season_id}).order('duty_days.date ASC')
+    joins(:duty_day).includes(:patrol_responsibility).where(duty_days: {season_id: season_id}).order('duty_days.date ASC')
   }
+  
+  def pending_substitution
+    ps = substitutions.includes(:sub).where(accepted: false).first 
+    ps.nil? ?  {id: nil, sub_id: nil, sub_name: nil} : {id: ps.id, sub_id: ps.sub_id, sub_name: (ps.sub.nil? ? nil : ps.sub.name)}
+  end
+
 end

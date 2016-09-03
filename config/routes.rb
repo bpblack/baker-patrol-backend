@@ -10,7 +10,6 @@ Rails.application.routes.draw do
         resources :teams, only: [:index]                #user team for a season
         resources :substitutions, only: [:index]        #user sub history for a season
       end
-      resources :custom_claims, only: [:index]          #TODO: delete
       resources :substitutions, only: [:index]          #user subs for current season
       member do
         get 'extra'

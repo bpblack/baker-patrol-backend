@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -11,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160626181600) do
+ActiveRecord::Schema.define(version: 20160903032808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,7 +34,9 @@ ActiveRecord::Schema.define(version: 20160626181600) do
     t.string   "other"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "role_id"
     t.index ["name", "version"], name: "index_patrol_responsibilities_on_name_and_version", unique: true, using: :btree
+    t.index ["role_id"], name: "index_patrol_responsibilities_on_role_id", using: :btree
   end
 
   create_table "patrols", force: :cascade do |t|
@@ -123,6 +124,7 @@ ActiveRecord::Schema.define(version: 20160626181600) do
 
   add_foreign_key "duty_days", "seasons"
   add_foreign_key "duty_days", "teams"
+  add_foreign_key "patrol_responsibilities", "roles"
   add_foreign_key "patrols", "duty_days"
   add_foreign_key "patrols", "patrol_responsibilities"
   add_foreign_key "patrols", "users"

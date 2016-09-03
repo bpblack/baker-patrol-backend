@@ -33,7 +33,7 @@ class SubstitutionsController < ApplicationController
       @substitution.save!
       if @substitution.sub_id.nil?
         ignores = patrol.duty_day.patrols.pluck(:user_id)
-        emails = User.sub_email_list(ignores, patrol.duty_day.season_id)
+        emails = User.subbable(ignores, patrol.duty_day.season_id, patrol.patrol_responsibility.role_id).pluck(:email)
         SubstitutionMailer.request_sub(@substitution, emails, params[:message]).deliver_now
       else
          SubstitutionMailer.assign_sub(@substitution).deliver_now

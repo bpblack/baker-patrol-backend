@@ -9,12 +9,12 @@ class User < ApplicationRecord
   validates :password, length: {minimum: 8}, format: { with: /\A[[:alnum:][:punct:]]{8,72}\z/ }
   validates :name, presence: true
 
-  scope :sub_email_list, -> (ignore_ids, season_id) {
-    joins(:seasons).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?)', season_id).pluck(:email)
+  scope :sub_email_list, -> (ignore_ids, season_id, role_id) {
+    joins(:seasons, :roles).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?) AND EXISTS (SELECT 1 FROM roles WHERE role_id = ?)', season_id).pluck(:email)
   }
 
-  scope :subbable, -> (ignore_ids, season_id) {
-    joins(:seasons).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?)', season_id)
+  scope :subbable, -> (ignore_ids, season_id, role_id) {
+    joins(:seasons, :roles).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?) AND EXISTS (SELECT 1 FROM roles WHERE role_id = ?)', season_id, role_id)
   }
 
   def send_password_reset

@@ -10,9 +10,9 @@ class PatrolsController < ApplicationController
   end
 
   def assignable
-    patrol = Patrol.includes(:user, :duty_day).find(params[:id])
+    patrol = Patrol.includes(:user, :duty_day, :patrol_responsibility).find(params[:id])
     ignores = patrol.duty_day.patrols.pluck(:user_id)
-    @assignable = User.subbable(ignores, patrol.duty_day.season_id)
+    @assignable = User.subbable(ignores, patrol.duty_day.season_id, patrol.patrol_responsibility.role_id)
     render 'patrols/assignable.json.jbuilder', status: :ok
   end
 end

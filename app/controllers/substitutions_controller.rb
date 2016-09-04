@@ -81,7 +81,7 @@ class SubstitutionsController < ApplicationController
         ignores = @substitution.patrol.duty_day.patrols.pluck(:user_id)
         emails = User.sub_email_list(ignores, @substitution.patrol.duty_day.season_id)
       else
-        emails = @substitution.sub.email
+        emails = [@substitution.sub.email]
       end
       SubstitutionMailer.remind(@substitution, emails, params[:message]).deliver_now
       head :no_content

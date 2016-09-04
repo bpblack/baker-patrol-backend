@@ -30,7 +30,7 @@ class SubstitutionMailer < ApplicationMailer
 
   def remind(substitution, emails, message)
     @name, @message = substitution.user.name, message
-    mail bcc: emails, 
+    mail to: (emails.size == 1) ? emails[0] : nil, bcc: (emails.size > 1) ? emails : nil, 
          reply_to: substitution.user.email, 
          subject: "[PATROL] #{substitution.user.name} needs a sub on #{substitution.patrol.duty_day.date.strftime('%m/%d/%Y')} (#{substitution.patrol.patrol_responsibility.name})"
   end

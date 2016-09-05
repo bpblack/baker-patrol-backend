@@ -24,13 +24,25 @@ class SubstitutionsController < ApplicationController
   def create
     # test that patrol owned by current user or current user is admin
     if params[:patrol_id]
-      patrol = Patrol.includes(:duty_day, :user, :patrol_responsibility).find(params[:patrol_id])
+      patrol = Patrol.includes(:duty_day, :user, {patrol_responsibility: :role}).find(params[:patrol_id])
       @substitution = Substitution.new(user_id: patrol.user_id, patrol: patrol, reason: params[:reason])
       authorize @substitution #current user must match patrol user id, be an admin, or be the duty day team leader
       if params[:assigned_id]
-        @substitution.sub_id = params[:assigned_id]
+        sub = User.find(params[:assigned_id])
+        if (sub.has_role?(patrol.patrol_responsibility.role.name))
+          @substitution.sub_id = params[:assigned_id]
+          status = :accepted
+          json = {id: nil, sub_id: sub.id, sub_name: sub.name}
+        else 
+          status = :bad_request
+          json = {error: "#{sub.name} cannot be assigned #{patrol.patrol_responsibility.name} v#{patrol.patrol_responsibility.version}"}
+        end
+      else
+        status = :created
+        json = {id: nil, sub_id: nil, sub_name: nil}
       end
       @substitution.save!
+      json[:id] = @substitution.id
       if @substitution.sub_id.nil?
         ignores = patrol.duty_day.patrols.pluck(:user_id)
         emails = User.subbable(ignores, patrol.duty_day.season_id, patrol.patrol_responsibility.role_id).pluck(:email)
@@ -38,19 +50,24 @@ class SubstitutionsController < ApplicationController
       else
          SubstitutionMailer.assign_sub(@substitution).deliver_now
       end
-      head :no_content
+      render json: json, status: status
     else
       render nothing: true, status: :bad_request
     end
   end
 
   def assign
-    @substitution = Substitution.includes(:user, {patrol: :duty_day}).find(params[:id])
+    @substitution = Substitution.includes(:user, {patrol: [:duty_day, {patrol_responsibility: :role}]}).find(params[:id])
     authorize @substitution #user must be an admin, the requesting patroller, or the duty day team leader
     assigned_sub = User.find(params[:assigned_id])
-    @substitution.update!(sub: assigned_sub)
-    SubstitutionMailer.assign_sub(@substitution).deliver_now
-    head :no_content
+    if (assigned_sub.has_role?(@substitution.patrol.patrol_responsibility.role.name)) 
+      @substitution.update!(sub: assigned_sub)
+      SubstitutionMailer.assign_sub(@substitution).deliver_now
+      render json: {id: @substitution.id, sub_id: assigned_sub.id, sub_name: assigned_sub.name}, status: :accepted
+    else 
+      patrol_responsibility = @substitution.patrol.patrol_responsibility
+      render json: {error: "#{user.name} cannot be assigned #{patrol_responsibility.name} v#{patrol_responsibility.version}"}, status: :bad_request
+    end
   end
 
   def accept

@@ -10,11 +10,11 @@ json.patrols @duty_day.patrols.sort_by { |p| p.patrol_responsibility.name }.rota
   json.responsibility do |json|
     json.(p.patrol_responsibility, :id, :name, :version)
   end
-  if p.substitutions.exists?
-    json.has_substitutions true
-    json.has_pending_substitutions p.substitutions.where(accepted: false).exists?
+  if p.latest_substitution.nil? 
+    json.latest_substitution nil
   else
-    json.has_subsubstitutions false
-    json.has_pending_substitutions false
-   end
+    json.latest_substitution do |json|
+      json.(p.latest_substitution, :accepted, :sub_id)
+    end
+  end
 end

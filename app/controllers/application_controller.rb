@@ -5,6 +5,10 @@ class ApplicationController < ActionController::API
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   
+  def index
+    render file: 'public/index'
+  end
+
   private 
   def not_found(exception)
     render json: {error: exception.to_s}, status: :not_found

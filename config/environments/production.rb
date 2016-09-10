@@ -73,4 +73,22 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # Mail config
+  config.active_job.queue_adapter = :sucker_punch
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.default_url_options = { host: 'mtbakervoly.herokuapp.com' }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              'smtp.gmail.com',
+    port:                 587,
+    domain:               'mtbakervoly.herokuapp.com',
+    user_name:            ENV['GMAIL_USER'],
+    password:             ENV['GMAIL_PASS'],
+    authentication:       :plain,
+    enable_starttls_auto: true  
+  }
+
+  #URL for use in mailers
+  config.email_url = 'https://mtbakervoly.herokuapp.com'
 end

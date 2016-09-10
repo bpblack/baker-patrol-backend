@@ -49,4 +49,7 @@ Rails.application.configure do
 
   #config.force_ssl = true
   #config.ssl_options = { hsts: { preload: true }}
+  
+  #URL for use in mailers
+  config.email_url = 'http://localhost:8000'
 end

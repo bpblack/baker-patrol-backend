@@ -46,9 +46,9 @@ class SubstitutionsController < ApplicationController
       if @substitution.sub_id.nil?
         ignores = patrol.duty_day.patrols.pluck(:user_id)
         emails = User.subables(ignores, patrol.duty_day.season_id, patrol.patrol_responsibility.role_id).pluck(:email)
-        SubstitutionMailer.request_sub(@substitution, emails, params[:message]).deliver_now
+        SubstitutionMailer.request_sub(@substitution, emails, params[:message]).deliver_later
       else
-         SubstitutionMailer.assign_sub(@substitution).deliver_now
+        SubstitutionMailer.assign_sub(@substitution).deliver_later
       end
       render json: json, status: status
     else
@@ -62,7 +62,7 @@ class SubstitutionsController < ApplicationController
     assigned_sub = User.find(params[:assigned_id])
     if (assigned_sub.has_role?(@substitution.patrol.patrol_responsibility.role.name)) 
       @substitution.update!(sub: assigned_sub)
-      SubstitutionMailer.assign_sub(@substitution).deliver_now
+      SubstitutionMailer.assign_sub(@substitution).deliver_later
       render json: {id: @substitution.id, sub_id: assigned_sub.id, sub_name: assigned_sub.name}, status: :accepted
     else 
       patrol_responsibility = @substitution.patrol.patrol_responsibility
@@ -77,14 +77,14 @@ class SubstitutionsController < ApplicationController
       @substitution.update!(accepted: true)
       @substitution.patrol.update!(user_id: @substitution.sub_id)
     end
-    SubstitutionMailer.accept_sub_request(@substitution).deliver_now
+    SubstitutionMailer.accept_sub_request(@substitution).deliver_later
     head :no_content
   end
 
   def reject
     @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
     authorize @substitution #user must be admin or the sub
-    SubstitutionMailer.reject_sub_request(@substitution, params[:message]).deliver_now
+    SubstitutionMailer.reject_sub_request(@substitution, params[:message]).deliver_later
     @substitution.update!(sub: nil)
   end
 
@@ -100,7 +100,7 @@ class SubstitutionsController < ApplicationController
       else
         emails = [@substitution.sub.email]
       end
-      SubstitutionMailer.remind(@substitution, emails, params[:message]).deliver_now
+      SubstitutionMailer.remind(@substitution, emails, params[:message]).deliver_later
       head :no_content
     end
   end

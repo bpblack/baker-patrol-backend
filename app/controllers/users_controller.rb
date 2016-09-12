@@ -5,7 +5,8 @@ class UsersController < ApplicationController
     @user = User.includes(:seasons, :roster_spots, :roles).find(params[:id])
     authorize @user
     json = @user.as_json(
-      only: [:name],
+      only: [],
+      methods: :name,
       include: [{seasons: {only: [:id, :name, :start, :end]}}]
     )
     json[:roles] = @user.roles.map do |r|

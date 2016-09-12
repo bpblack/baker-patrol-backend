@@ -1,10 +1,6 @@
 json.patrols @patrols do |p|
   json.id p.id
-  if p.duty_day.date < Date.today
-    json.swappable false
-  else 
-    json.swappable true
-  end
+  json.swapable p.duty_day.date >= Date.current
   if !p.latest_substitution.nil? && !p.latest_substitution.accepted
     json.pending_substitution do |json|
       json.(p.latest_substitution, :id, :sub_id)

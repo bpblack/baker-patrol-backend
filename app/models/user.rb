@@ -7,11 +7,16 @@ class User < ApplicationRecord
   has_many :substitutes, class_name: 'Substitution', foreign_key: :user_id
   has_many :substitutions, class_name: 'Substitution', foreign_key: :sub_id
   validates :password, length: {minimum: 8}, format: { with: /\A[[:alnum:][:punct:]]{8,72}\z/ }
-  validates :name, presence: true
+  validates :first_name, presence: true
+  validates :last_name, presence: true
 
   scope :subables, -> (ignore_ids, season_id, role_id) {
     joins(:seasons, :roles).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?) AND EXISTS (SELECT 1 FROM roles WHERE role_id = ?)', season_id, role_id)
   }
+
+  def name
+    "#{self.first_name} #{self.last_name}"
+  end
 
   def send_password_reset
     generate_token(:password_reset_token)

@@ -7,6 +7,7 @@ class Substitution < ApplicationRecord
   validate  :patrol_date_cannot_be_in_past
   validate  :sub_is_not_patrolling_on_same_duty_day
   validate  :sub_is_active_for_duty_day_season
+  validate  :sub_is_not_assigned_on_same_duty_day, if: Proc.new { |sub| sub.sub_id_changed? }
   #validates_uniqueness_of :patrol_id, scope: :user_id
   validate  :patrol_has_no_existing_open_subs, on: :create
 
@@ -44,6 +45,12 @@ class Substitution < ApplicationRecord
   def sub_is_not_patrolling_on_same_duty_day
     if patrol.duty_day.patrols.exists?(['user_id = ?', sub_id])
       errors.add(:sub_already_patrolling, 'Cannot add a substitute patroller who already is patrolling on the given duty day.')
+    end
+  end
+
+  def sub_is_not_assigned_on_same_duty_day
+    if patrol.duty_day.patrols.includes(:latest_substitution).exists?(['substitutions.accepted = false AND substitutions.sub_id = ?', sub_id])
+      errors.add(:sub_already_assigned, 'Cannot add a substitute patroller who is alreay assigned to any open substitution request on the given duty day.')
     end
   end
 

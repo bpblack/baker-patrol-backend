@@ -44,7 +44,7 @@ class SubstitutionsController < ApplicationController
       @substitution.save!
       json[:id] = @substitution.id
       if @substitution.sub_id.nil?
-        ignores = patrol.duty_day.patrols.pluck(:user_id)
+        ignores = patrol.duty_day.ignores
         emails = User.subables(ignores, patrol.duty_day.season_id, patrol.patrol_responsibility.role_id).pluck(:email)
         SubstitutionMailer.request_sub(@substitution, emails, params[:message]).deliver_later
       else
@@ -95,7 +95,7 @@ class SubstitutionsController < ApplicationController
       render json: {error: "Can't send a a reminder email for a request that is complete."}, status: :bad_request
     else
       if @substitution.sub.nil?
-        ignores = @substitution.patrol.duty_day.patrols.pluck(:user_id)
+        ignores = @substitution.patrol.duty_day.ignores
         emails = User.subables(ignores, @substitution.patrol.duty_day.season_id, @substitution.patrol.patrol_responsibility.role_id).pluck(:email)
       else
         emails = [@substitution.sub.email]

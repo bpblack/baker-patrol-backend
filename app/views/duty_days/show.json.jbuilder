@@ -3,7 +3,7 @@ json.swapable @duty_day.date >= Date.current
 json.team do |json|
   json.(@duty_day.team, :id, :name)
 end
-json.patrols @duty_day.patrols.sort_by { |p| p.patrol_responsibility.name }.rotate(@duty_day.patrols.size - 1) do |p|
+json.patrols @sorted_patrols do |p|
   json.(p, :id)
   json.patroller do |json|
     json.(p.user, :id, :name)
@@ -11,6 +11,9 @@ json.patrols @duty_day.patrols.sort_by { |p| p.patrol_responsibility.name }.rota
   end
   json.responsibility do |json|
     json.(p.patrol_responsibility, :id, :name, :version)
+    if (@isAdmin) 
+      json.role p.patrol_responsibility.role.name.to_sym
+    end
   end
   if @isAdmin
     if p.latest_substitution.nil? 

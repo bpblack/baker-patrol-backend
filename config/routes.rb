@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       resources :substitutions, only: [:create]         #create a sub for a given patrol
       member do
         get 'assignable'
+        patch 'swap'
       end
     end
     #admin functionality

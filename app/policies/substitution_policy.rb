@@ -44,5 +44,4 @@ class SubstitutionPolicy < ApplicationPolicy
   def user_is_admin_or_duty_day_team_leader?
     user.has_role?(:admin) or user.has_role?(:leader, user.roster_spots.find_by(season_id: record.patrol.duty_day.season_id, team_id: record.patrol.duty_day.team_id))
   end
-
 end

@@ -1,6 +1,6 @@
 class Patrol < ApplicationRecord
   attr_accessor :skip_responsibility_validation
-  after_initialize :init_skip_responsibility_validation
+  after_initialize :initialize_skip_responsibility_validation
   
   belongs_to :user
   belongs_to :duty_day
@@ -26,7 +26,7 @@ class Patrol < ApplicationRecord
   
 
   private
-  def init_skip_responsibility_validation
+  def initialize_skip_responsibility_validation
     @skip_responsibility_validation = false
   end
 

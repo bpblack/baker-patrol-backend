@@ -1,4 +1,7 @@
 class Substitution < ApplicationRecord
+  attr_writer :only_authorize_admin
+  after_initialize :initialize_only_authorize_admin
+  
   belongs_to :patrol
   belongs_to :user, class_name: 'User'
   belongs_to :sub, class_name: 'User', optional: true
@@ -34,6 +37,10 @@ class Substitution < ApplicationRecord
     accepted || patrol.duty_day.date < Date.today
   end
 
+  def only_authorize_admin?
+    @only_authorize_admin
+  end
+  
   private
 
   def patrol_date_cannot_be_in_past
@@ -71,6 +78,10 @@ class Substitution < ApplicationRecord
       errors.add(:substitution_final, 'Cannot delete a substitution request that is accepted or in the past') 
       throw :abort
     end
+  end
+
+  def initialize_only_authorize_admin
+    @only_authorize_admin = false
   end
 end
 

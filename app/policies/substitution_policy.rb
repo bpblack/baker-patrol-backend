@@ -12,11 +12,11 @@ class SubstitutionPolicy < ApplicationPolicy
   end
 
   def create?
-    user.id == record.user_id or user_is_admin_or_duty_day_team_leader?
+    (!record.only_authorize_admin? && user.id == record.user_id) or user_is_admin_or_duty_day_team_leader?
   end
 
   def assign?
-    user.id == record.user_id or user_is_admin_or_duty_day_team_leader?
+    (!record.only_authorize_admin? && user.id == record.user_id) or user_is_admin_or_duty_day_team_leader?
   end
 
   def accept?
@@ -38,8 +38,6 @@ class SubstitutionPolicy < ApplicationPolicy
   def assignable?
     user.id == record.user_id or user_is_admin_or_duty_day_team_leader?
   end
-
-  private
 
   def user_is_admin_or_duty_day_team_leader?
     user.has_role?(:admin) or user.has_role?(:leader, user.roster_spots.find_by(season_id: record.patrol.duty_day.season_id, team_id: record.patrol.duty_day.team_id))

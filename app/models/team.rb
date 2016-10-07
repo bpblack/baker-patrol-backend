@@ -3,8 +3,8 @@ class Team < ApplicationRecord
   has_many :duty_days
   validates_uniqueness_of :name
 
-  scope :season_roster_spots_duty_days, -> (season_id) {
-    includes({roster_spots: :user}, :duty_days).where(roster_spots: {season_id: season_id}, duty_days: {season_id: season_id})
+  scope :season_roster_spots, -> (season_id) {
+    includes({roster_spots: :user}).where(roster_spots: {season_id: season_id})
   }
 
   def leader

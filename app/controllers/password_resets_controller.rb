@@ -13,7 +13,7 @@ class PasswordResetsController < ApplicationController
     if params[:password] != params[:confirm_password]
       render json: {error: "Reset passwords don't match."}, status: :not_acceptable and return
     end
-    update = {password: params[:password], password_reset_token: ''}
+    update = {password: params[:password], password_reset_token: nil}
     @user = User.find_by_password_reset_token(params[:id])
     update[:activated] = true unless @user.activated?
     if @user

@@ -9,4 +9,10 @@ class UserMailer < ApplicationMailer
     @user = user
     mail to: user.email, subject: "Mt. Baker Patrol Password Reset"
   end
+
+  def new_user(user)
+    @user = user
+    mail to: @user.email, subject: "Mt Baker Patrol Account Created"
+  end
+
 end

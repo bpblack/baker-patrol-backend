@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get 'custom_claims/index'                             #TODO: delete
-
   scope 'api' do
     post 'user_token' => 'user_token#create'
     resources :password_resets

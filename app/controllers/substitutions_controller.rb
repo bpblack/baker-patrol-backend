@@ -9,7 +9,7 @@ class SubstitutionsController < ApplicationController
       s_id = params[:season_id].present? ? params[:season_id] : Season.current_season_id
       assignable = params[:assignable].present? ? ActiveModel::Type::Boolean.new.cast(params[:assignable]) : false
       authorize Substitution.new({user_id: u_id}) #current user must match ids or be an admin
-      @requests = Substitution.user_subs(u_id, s_id, is_sub: false, is_assignable: assignable, since: params[:since])
+      @requests = params[:inc_requests] ? Substitution.user_subs(u_id, s_id, is_sub: false, is_assignable: assignable, since: params[:since]) : []
       @substitutions = Substitution.user_subs(u_id, s_id, is_sub: true, is_assignable: assignable, since: params[:since])
       render 'substitutions/index.user.json.jbuilder', status: :ok
     elsif params[:patrol_id].present?

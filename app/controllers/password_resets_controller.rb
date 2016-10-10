@@ -15,7 +15,7 @@ class PasswordResetsController < ApplicationController
     end
     update = {password: params[:password], password_reset_token: nil}
     @user = User.find_by_password_reset_token(params[:id])
-    update[:activated] = true unless @user.activated?
+    update[:activated] = true unless @user.nil? || @user.activated?
     if @user
       if @user.password_reset_sent_at < 2.hours.ago && @user.activated?
         render json: {error: 'Reset link has expired'}, status: :forbidden

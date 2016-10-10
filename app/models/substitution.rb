@@ -16,7 +16,7 @@ class Substitution < ApplicationRecord
 
   before_destroy :substitution_completed?
 
-  scope :user_subs, -> (user_id, season_id, is_sub:, is_assignable: false) {
+  scope :user_subs, -> (user_id, season_id, is_sub:, is_assignable: false, since: nil) {
     where_conds = {user_id: user_id}
     if is_sub
       incs = :user
@@ -29,6 +29,10 @@ class Substitution < ApplicationRecord
       where_conds[:accepted] = false
       where_conds[:today] = Date.today
       where_sql += ' AND substitutions.accepted = :accepted AND duty_days.date > :today'
+    end
+    unless since.nil?
+      where_sql += ' AND substitutions.updated_at > :since'
+      where_conds[:since] = since
     end
     includes(incs).joins(:patrol).merge(Patrol.season_duty_days_ordered(season_id)).select('substitutions.*, duty_days.date, duty_days.id as duty_day_id').where(where_sql, where_conds)
   }

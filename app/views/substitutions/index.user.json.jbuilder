@@ -23,3 +23,4 @@ json.substitutions @substitutions do |s|
     json.version s.patrol.patrol_responsibility.version
   end      
 end
+json.timestamp Time.now.utc.iso8601

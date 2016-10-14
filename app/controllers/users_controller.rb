@@ -5,7 +5,7 @@ class UsersController < ApplicationController
     @user = User.includes(:seasons, :roster_spots, :roles).find(params[:id])
     authorize @user
     json = @user.as_json(
-      only: [],
+      only: [:phone, :email],
       methods: :name,
       include: [{seasons: {only: [:id, :name, :start, :end]}}]
     )
@@ -19,5 +19,4 @@ class UsersController < ApplicationController
     end
     render json: json, status: :ok
   end
-
 end

@@ -1,12 +1,15 @@
 class User < ApplicationRecord
+  attr_writer :password_validation
+  after_initialize :initialize_password_validation
+
   rolify
-  has_secure_password
+  has_secure_password validations: :password_validation?
   has_many :roster_spots
   has_many :seasons, -> {order(start: :desc).distinct}, through: :roster_spots
   has_many :patrols
   has_many :substitutes, class_name: 'Substitution', foreign_key: :user_id
   has_many :substitutions, class_name: 'Substitution', foreign_key: :sub_id
-  validates :password, length: {minimum: 8}, format: { with: /\A[[:alnum:][:punct:]]{8,72}\z/ }
+  validates :password, length: {minimum: 8}, format: { with: /\A[[:alnum:][:punct:]]{8,72}\z/ }, if: :password_validation?
   validates :first_name, presence: true
   validates :last_name, presence: true
 
@@ -35,4 +38,12 @@ class User < ApplicationRecord
     self.find(payload["sub"])
   end
 
+  private
+  def initialize_password_validation
+    @password_validation = true
+  end
+
+  def password_validation?
+    @password_validation
+  end
 end

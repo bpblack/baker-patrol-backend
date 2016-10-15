@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   scope 'api' do
     post 'user_token' => 'user_token#create'
     resources :password_resets
-    resources :users do
+    resources :users, only: [:update] do
       resources :seasons, only: [] do
         resources :patrols, only: [:index]              #user patrols for a season
         resources :teams, only: [:index]                #user team for a season

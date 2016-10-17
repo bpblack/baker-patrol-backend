@@ -35,6 +35,14 @@ Rails.application.routes.draw do
         post  'remind'                                  #create a new reminder email
       end
     end 
+    resources :google_calendars, only: [:create] do
+      collection do
+        get 'authorize'
+        delete 'destroy'
+        get 'calendars'
+        post 'select'
+      end
+    end
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 

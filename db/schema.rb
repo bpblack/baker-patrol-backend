@@ -10,10 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160912030653) do
+ActiveRecord::Schema.define(version: 20161015184355) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "calendars", force: :cascade do |t|
+    t.integer  "user_id"
+    t.string   "calendar_type"
+    t.integer  "calendar_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["calendar_type", "calendar_id"], name: "index_calendars_on_calendar_type_and_calendar_id", using: :btree
+    t.index ["user_id", "calendar_type"], name: "index_calendars_on_user_id_and_calendar_type", unique: true, using: :btree
+    t.index ["user_id"], name: "index_calendars_on_user_id", using: :btree
+  end
 
   create_table "duty_days", force: :cascade do |t|
     t.integer  "season_id"
@@ -24,6 +35,15 @@ ActiveRecord::Schema.define(version: 20160912030653) do
     t.index ["season_id"], name: "index_duty_days_on_season_id", using: :btree
     t.index ["team_id", "date"], name: "index_duty_days_on_team_id_and_date", unique: true, using: :btree
     t.index ["team_id"], name: "index_duty_days_on_team_id", using: :btree
+  end
+
+  create_table "google_calendars", force: :cascade do |t|
+    t.string   "encrypted_calendar_id"
+    t.string   "encrypted_calendar_id_iv"
+    t.string   "encrypted_refresh_token"
+    t.string   "encrypted_refresh_token_iv"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   create_table "patrol_responsibilities", force: :cascade do |t|
@@ -124,6 +144,7 @@ ActiveRecord::Schema.define(version: 20160912030653) do
     t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
   end
 
+  add_foreign_key "calendars", "users"
   add_foreign_key "duty_days", "seasons"
   add_foreign_key "duty_days", "teams"
   add_foreign_key "patrol_responsibilities", "roles"

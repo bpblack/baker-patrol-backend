@@ -9,6 +9,9 @@ class User < ApplicationRecord
   has_many :patrols
   has_many :substitutes, class_name: 'Substitution', foreign_key: :user_id
   has_many :substitutions, class_name: 'Substitution', foreign_key: :sub_id
+  has_many :calendars
+  has_one  :google_calendar_relation, -> { where(calendar_type: 'GoogleCalendar') }, class_name: 'Calendar'
+  has_one  :google_calendar, through: :google_calendar_relation, source: :calendar, source_type: 'GoogleCalendar' 
   validates :password, length: {minimum: 8}, format: { with: /\A[[:alnum:][:punct:]]{8,72}\z/ }, if: :password_validation?
   validates :first_name, presence: true
   validates :last_name, presence: true

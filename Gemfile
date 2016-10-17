@@ -29,6 +29,12 @@ gem 'pundit'
 #queue stuff
 gem 'sucker_punch', '~> 2.0'
 
+#encrypted cols
+gem 'attr_encrypted', '~>3.0.3'
+
+#gcal sync
+gem 'google-api-client', '~> 0.9.15'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'

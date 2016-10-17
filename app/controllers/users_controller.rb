@@ -51,6 +51,6 @@ class UsersController < ApplicationController
   private
 
   def user_invalid
-    render json: {error: @user.errors.values.join(', ')}, status: :bad_request 
+    render json: {error: @user.errors.values.join(', ')}, status: :not_acceptable
   end
 end

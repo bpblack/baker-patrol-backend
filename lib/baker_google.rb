@@ -4,8 +4,7 @@ module BakerGoogle
   require 'google/api_client/client_secrets'
 
   def google_auth(**options)
-    client = File.join(Rails.root, 'config', 'google_client_secret.json')
-    client_secrets = Google::APIClient::ClientSecrets.load(client)
+    client_secrets = Google::APIClient::ClientSecrets.new(Rails.application.config.google[:secrets])
     auth_client = client_secrets.to_authorization
     auth_client.update!(options)
     return auth_client

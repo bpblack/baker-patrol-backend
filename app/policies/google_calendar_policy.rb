@@ -7,10 +7,6 @@ class GoogleCalendarPolicy < ApplicationPolicy
     user.google_calendar.nil?
   end
 
-  def calendars?
-    !user.google_calendar.nil?
-  end
-
   def select?
     !user.google_calendar.nil?
   end

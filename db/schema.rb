@@ -10,10 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161015184355) do
+ActiveRecord::Schema.define(version: 20161018053323) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "calendar_events", force: :cascade do |t|
+    t.string   "owner_type",        null: false
+    t.integer  "owner_id",          null: false
+    t.integer  "patrol_id"
+    t.string   "encrypted_uuid"
+    t.string   "encrypted_uuid_iv"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["owner_type", "owner_id"], name: "index_calendar_events_on_owner_type_and_owner_id", using: :btree
+    t.index ["patrol_id", "owner_id", "owner_type"], name: "patrol_unique_to_calendar", unique: true, using: :btree
+    t.index ["patrol_id"], name: "index_calendar_events_on_patrol_id", using: :btree
+  end
 
   create_table "calendars", force: :cascade do |t|
     t.integer  "user_id"
@@ -144,6 +157,7 @@ ActiveRecord::Schema.define(version: 20161015184355) do
     t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
   end
 
+  add_foreign_key "calendar_events", "patrols"
   add_foreign_key "calendars", "users"
   add_foreign_key "duty_days", "seasons"
   add_foreign_key "duty_days", "teams"

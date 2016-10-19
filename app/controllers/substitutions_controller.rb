@@ -39,7 +39,7 @@ class SubstitutionsController < ApplicationController
           json = {id: nil, sub_id: sub.id, sub_name: sub.name}
         else 
           status = :bad_request
-          json = {error: "#{sub.name} cannot be assigned #{patrol.patrol_responsibility.name} v#{patrol.patrol_responsibility.version}"}
+          json = {error: "#{sub.name} cannot be assigned #{patrol.patrol_responsibility.versioned_name}"}
         end
       else
         send_emails = true
@@ -75,7 +75,7 @@ class SubstitutionsController < ApplicationController
       render json: {id: @substitution.id, sub_id: assigned_sub.nil? ? nil : assigned_sub.id, sub_name: assigned_sub.nil? ? nil : assigned_sub.name}, status: :accepted
     else 
       patrol_responsibility = @substitution.patrol.patrol_responsibility
-      render json: {error: "#{user.name} cannot be assigned #{patrol_responsibility.name} v#{patrol_responsibility.version}"}, status: :bad_request
+      render json: {error: "#{user.name} cannot be assigned #{patrol_responsibility.versioned_name}"}, status: :bad_request
     end
   end
 
@@ -87,6 +87,7 @@ class SubstitutionsController < ApplicationController
       @substitution.patrol.update!(user_id: @substitution.sub_id)
     end
     SubstitutionMailer.accept_sub_request(@substitution).deliver_later
+    SubstitutionGoogleCalendarJob.perform_later(@substitution)
     head :no_content
   end
 

@@ -7,6 +7,8 @@ class Patrol < ApplicationRecord
   belongs_to :patrol_responsibility, optional: :skip_responsibility_validation
   has_many :substitutions, -> { order(id: :desc) }
   has_one :latest_substitution, -> { includes(:sub).order(id: :desc) }, class_name: 'Substitution'
+  has_many :calendar_events
+  has_one :google_event, -> { where(owner_type: 'GoogleCalendar') }, class_name: 'CalendarEvent'
 
   validates_uniqueness_of :user_id, scope: :duty_day_id
   validates_uniqueness_of :patrol_responsibility_id, scope: :duty_day_id, unless: :skip_responsibility_validation

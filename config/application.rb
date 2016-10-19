@@ -27,5 +27,7 @@ module Bakerapi
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
     config.active_job.queue_adapter = :sucker_punch
+    config.time_zone = "Pacific Time (US & Canada)"
+    config.autoload_paths << "#{Rails.root}/lib"
   end
 end

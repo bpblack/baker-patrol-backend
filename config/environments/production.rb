@@ -91,4 +91,13 @@ Rails.application.configure do
 
   #URL for use in mailers
   config.email_url = 'https://mtbakervoly.herokuapp.com'
+
+  #google calendar configuration
+  config.google = {
+    redirect_uri: 'https://mtbakervoly.herokuapp.com/Dash/Google',
+    revoke_uri: 'https://accounts.google.com/o/oauth2/revoke',
+    service_application_name: 'Mt Baker Volunteer API',
+    event_location: 'Mt. Baker Ski Area, Mount Baker Highway, Deming, WA'
+  }
+  config
 end

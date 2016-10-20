@@ -1,6 +1,16 @@
 class DutyDaysController < ApplicationController
   before_action :authenticate_user
   
+  def index
+    authorize DutyDay
+    if (params[:season_id])
+      @duty_days = DutyDay.includes(:team).where(season_id: params[:season_id])
+      render json: @duty_days.as_json(include: [{team: {only: [:id, :name]}}], only: [:id, :date]), status: :ok
+    else
+      head :bad_request
+    end
+  end
+
   def show
     role_order = {onhill: 1, aidroom: 2, host: 3}
     patrol_order = {team_leader: "a", base: "z"} # this is a string that is < all other patrol name strings

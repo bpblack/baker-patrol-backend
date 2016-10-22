@@ -36,3 +36,5 @@ bower.json
 
 # Ignore Byebug command history file.
 .byebug_history
+
+/config/google_client_secret.json

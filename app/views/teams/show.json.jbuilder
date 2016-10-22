@@ -6,7 +6,7 @@ else
     json.(@team.leader.user, :id, :name)
   end
 end
-json.patrollers @team.roster_spots do |rs|
+json.patrollers @team.sorted_members do |rs|
   json.(rs.user, :id, :name) unless @team.leader && rs.id == @team.leader.id
 end
 json.duty_days @team.duty_days, :id, :date

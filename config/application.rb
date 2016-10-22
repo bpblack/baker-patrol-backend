@@ -29,5 +29,23 @@ module Bakerapi
     config.active_job.queue_adapter = :sucker_punch
     config.time_zone = "Pacific Time (US & Canada)"
     config.autoload_paths << "#{Rails.root}/lib"
+
+    # array of roles, resourced indicates whether it is tied to a roster spot
+    config.duty_day_patrol_ranks = {
+      role: { onhill: 1, aidroom: 2, host: 3},
+      responsibility: {team_leader: 1, unspecified: 2, base: 3}
+    }
+    config.team_role_ranks = [
+      {role: :leader, resourced: true, rank: 1},
+      {role: :onhill, resourced: false, rank: 2},
+      {role: :aidroom, resourced: false, rank: 2},
+      {role: :host, resourced: false, rank: 3}
+    ]
+    config.team_roles = [
+      {role: :leader, name: 'Leader', resourced: true}, 
+      {role: :onhill, name: 'On Hill', resourced: false}, 
+      {role: :host, name: 'Host', resourced: false},
+      {role: :aidroom, name: 'Aid Room', resourced: false}
+    ] 
   end
 end

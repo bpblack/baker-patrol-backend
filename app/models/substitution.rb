@@ -15,8 +15,9 @@ class Substitution < ApplicationRecord
   validate  :patrol_has_no_existing_open_subs, on: :create
 
   before_destroy :substitution_completed?
+  before_update :substitution_completed?
 
-  scope :user_subs, -> (user_id, season_id, is_sub:, is_assignable: false, since: nil) {
+  scope :user_subs, -> (user_id, season_id, is_sub:, accepted: nil, since: nil, future: nil) {
     where_conds = {user_id: user_id}
     if is_sub
       incs = :user
@@ -25,10 +26,20 @@ class Substitution < ApplicationRecord
       incs = :sub
       where_sql = 'substitutions.user_id = :user_id'
     end
-    if is_assignable
-      where_conds[:accepted] = false
+    # assignable will be nil, true, or false, nil => no conditions, true => not accepted
+    case accepted
+    when true, false 
+      where_conds[:accepted] = accepted
+      where_sql += ' AND substitutions.accepted = :accepted'
+    else
+      #do nothing
+    end
+    case future
+    when true, false
       where_conds[:today] = Date.today
-      where_sql += ' AND substitutions.accepted = :accepted AND duty_days.date > :today'
+      where_sql += future ? ' AND duty_days.date >= :today' : ' AND duty_days.date < :today'
+    else
+      #do nothing
     end
     unless since.nil?
       where_sql += ' AND substitutions.updated_at > :since'
@@ -38,7 +49,8 @@ class Substitution < ApplicationRecord
   }
 
   def completed?
-    accepted || patrol.duty_day.date < Date.today
+    # any changes after accepted, accepted was changed but was already true, date is in the past
+    (!accepted_changed? && accepted) || (accepted_changed? && accepted_change[0]) || patrol.duty_day.date < Date.today
   end
 
   def only_authorize_admin?
@@ -79,7 +91,7 @@ class Substitution < ApplicationRecord
 
   def substitution_completed?
     if completed?
-      errors.add(:substitution_final, 'Cannot delete a substitution request that is accepted or in the past') 
+      errors.add(:substitution_final, 'Substitution is alreay accepted or in the past') 
       throw :abort
     end
   end

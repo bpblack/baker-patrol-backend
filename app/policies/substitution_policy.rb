@@ -20,11 +20,11 @@ class SubstitutionPolicy < ApplicationPolicy
   end
 
   def accept?
-    user.id == record.sub_id or user.has_role?(:admin)
+    user.id == record.sub_id
   end
 
   def reject?
-    user.id == record.sub_id or user.has_role?(:admin)
+    user.id == record.sub_id
   end
   
   def remind?

@@ -1,16 +1,31 @@
 class SubstitutionsController < ApplicationController
   before_action :authenticate_user
   rescue_from ActiveRecord::RecordInvalid, with: :sub_invalid
+  rescue_from ActiveRecord::RecordNotSaved, with: :sub_invalid
   rescue_from ActiveRecord::RecordNotDestroyed, with: :sub_not_destroyed 
 
   def index
     if params[:user_id].present?
       u_id = params[:user_id]
       s_id = params[:season_id].present? ? params[:season_id] : Season.current_season_id
-      assignable = params[:assignable].present? ? ActiveModel::Type::Boolean.new.cast(params[:assignable]) : false
+      # parse out what to do from the given params
+      if (!params[:requests].present? && !params[:substitutions].present?)
+        load_requests, load_substitutions = true, true
+        requests_accepted, substitutions_accepted = nil, nil
+      else
+        if (params[:requests].present?)
+          load_requests = true
+          requests_accepted = params[:requests].to_sym == :both ? nil : ActiveModel::Type::Boolean.new.cast(params[:requests])
+        end
+        if (params[:substitutions].present?)
+          load_substitutions = true
+          substitutions_accepted = params[:substitutions].to_sym == :both ? nil : ActiveModel::Type::Boolean.new.cast(params[:substitutions])
+        end
+      end
+      load_future = params[:future].present? ? ActiveModel::Type::Boolean.new.cast(params[:future]) : nil
       authorize Substitution.new({user_id: u_id}) #current user must match ids or be an admin
-      @requests = params[:inc_requests] ? Substitution.user_subs(u_id, s_id, is_sub: false, is_assignable: assignable, since: params[:since]) : []
-      @substitutions = Substitution.user_subs(u_id, s_id, is_sub: true, is_assignable: assignable, since: params[:since])
+      @requests = load_requests ? Substitution.user_subs(u_id, s_id, is_sub: false, accepted: requests_accepted, future: load_future, since: params[:since]) : []
+      @substitutions = load_substitutions ? Substitution.user_subs(u_id, s_id, is_sub: true, accepted: substitutions_accepted, future: load_future, since: params[:since]) : []
       render 'substitutions/index.user.json.jbuilder', status: :ok
     elsif params[:patrol_id].present?
       @patrol_with_subs = Patrol.duty_day_team_responsibility_subs(params[:patrol_id])
@@ -81,7 +96,7 @@ class SubstitutionsController < ApplicationController
 
   def accept
     @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
-    authorize @substitution #user must be admin or the sub
+    authorize @substitution #user must be the sub
     Substitution.transaction do
       @substitution.update!(accepted: true)
       @substitution.patrol.update!(user_id: @substitution.sub_id)
@@ -93,9 +108,9 @@ class SubstitutionsController < ApplicationController
 
   def reject
     @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
-    authorize @substitution #user must be admin or the sub
-    SubstitutionMailer.reject_sub_request(@substitution, params[:message]).deliver_later
+    authorize @substitution #user must be the sub 
     @substitution.update!(sub: nil)
+    SubstitutionMailer.reject_sub_request(@substitution, params[:message]).deliver_later
   end
 
   def remind

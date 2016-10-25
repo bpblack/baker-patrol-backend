@@ -25,12 +25,15 @@ Rails.application.routes.draw do
       resources :patrols, only: [] do
         resources :substitutions, only: [:index]        #patrol_sub history
       end
+      resources :duty_days, only: [] do
+        resources :substitutions, path: 'latest_subs', only: [:index]
+      end
     end
     resources :seasons, only: [] do
       resources :duty_days, only: [:index]
       resources :teams, path: 'roster', only: [:index]
     end
-    resources :duty_days, only: [:show]         #get duty day details
+    resources :duty_days, only: [:show]                 #get duty day details
     resources :substitutions, only: [:destroy] do       #delete a sub request
       member do
         patch 'assign'                                  #assign the request to a posted sub id

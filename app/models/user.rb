@@ -16,8 +16,12 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   validates :last_name, presence: true
 
-  scope :subables, -> (ignore_ids, season_id, role_id) {
-    joins(:seasons, :roles).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?) AND EXISTS (SELECT 1 FROM roles WHERE role_id = ?)', season_id, role_id)
+  scope :subables, -> (ignore_ids, season_id, role_sym) {
+    #joins(:seasons, :roles).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?) AND EXISTS (SELECT 1 FROM roles WHERE role_name LIKE ?)', season_id, role_sym)
+    joins(:roster_spots).merge(RosterSpot.where(season_id: season_id)).
+    joins(:roles).merge(Role.where(name: role_sym)).
+    where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM roles WHERE resource_id=roster_spots.id)').
+    order(:last_name)
   }
 
   def name
@@ -35,6 +39,10 @@ class User < ApplicationRecord
     begin
       self[column] = SecureRandom.urlsafe_base64
     end while User.exists?(column => self[column])
+  end
+
+  def season_roster_spot(season_id)
+    roster_spots.find_by(season_id: season_id)
   end
 
   def self.from_token_payload payload

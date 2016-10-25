@@ -48,6 +48,16 @@ class Substitution < ApplicationRecord
     includes(incs).joins(:patrol).merge(Patrol.season_duty_days_ordered(season_id)).select('substitutions.*, duty_days.date, duty_days.id as duty_day_id').where(where_sql, where_conds)
   }
 
+  scope :duty_day_latest_subs, -> (duty_day_id, since: nil) {
+    where_sql = 's2.id IS NULL'
+    where_conds = {}
+    if since
+      where_sql += ' AND substitutions.updated_at > :since'
+      where_conds[:since] = since
+    end
+    joins("LEFT JOIN substitutions AS s2 ON (substitutions.patrol_id = s2.patrol_id AND substitutions.id < s2.id)").joins(:patrol).where(where_sql, where_conds).where(patrols: {duty_day_id: duty_day_id})
+  }
+
   def completed?
     # any changes after accepted, accepted was changed but was already true, date is in the past
     (!accepted_changed? && accepted) || (accepted_changed? && accepted_change[0]) || patrol.duty_day.date < Date.today

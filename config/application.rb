@@ -37,15 +37,15 @@ module Bakerapi
     }
     config.team_role_ranks = [
       {role: :leader, resourced: true, rank: 1},
-      {role: :onhill, resourced: false, rank: 2},
-      {role: :aidroom, resourced: false, rank: 2},
-      {role: :host, resourced: false, rank: 3}
+      {role: :onhill, resourced: true, rank: 2},
+      {role: :aidroom, resourced: true, rank: 2},
+      {role: :host, resourced: true, rank: 3}
     ]
     config.team_roles = [
       {role: :leader, name: 'Leader', resourced: true}, 
-      {role: :onhill, name: 'On Hill', resourced: false}, 
-      {role: :host, name: 'Host', resourced: false},
-      {role: :aidroom, name: 'Aid Room', resourced: false}
+      {role: :onhill, name: 'OEC', resourced: true}, 
+      {role: :host, name: 'Host', resourced: true},
+      {role: :aidroom, name: 'Aid Room', resourced: true}
     ] 
   end
 end

@@ -20,7 +20,7 @@ json.patrols @sorted_patrols do |p|
       json.latest_substitution nil
     else
       json.latest_substitution do |json|
-        json.(p.latest_substitution, :accepted, :sub_id)
+        json.(p.latest_substitution, :id, :accepted, :sub_id)
       end
     end
   end

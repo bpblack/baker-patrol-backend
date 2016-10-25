@@ -34,7 +34,7 @@ class Patrol < ApplicationRecord
 
   def user_has_responsibility_role
     responsibility_role_name =  patrol_responsibility.role.name
-    unless  user.has_role?(responsibility_role_name.to_sym)
+    unless user.has_role?(responsibility_role_name.to_sym, user.season_roster_spot(patrol.duty_day.season_id))
       error_role_string = %w(a e i o u).include?(responsibility_role_name.downcase) ? "an #{responsibility_role_name}" : "a #{responsibility_role_name}"
       errors.add(:responsibility_role, "Cannot give #{user.name} #{error_role_string} responsibility.") 
     end

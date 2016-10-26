@@ -13,4 +13,11 @@ class RosterSpot < ApplicationRecord
     end
     roles.join(', ')
   end
+
+  def team_roles_extra_string
+    Rails.application.config.team_roles_extra do |role|
+      roles << role[:name] if user.method(has_roles_method).call(role[:role], role[:resourced] ? self : nil)
+    end
+    roles.join(', ')
+  end
 end

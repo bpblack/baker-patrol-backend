@@ -2,7 +2,11 @@ class SubstitutionGoogleCalendarJob < ApplicationJob
   include BakerGoogle
   queue_as :default
 
-  def perform(substitution)
+  def perform(substitution_id)
+    substitution = Substitution.find(substitution_id)
+    if substitution.nil?
+      return
+    end
     patrol = substitution.patrol
 
     # remove the event from the previous owner's calendar

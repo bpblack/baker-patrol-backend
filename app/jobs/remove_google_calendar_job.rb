@@ -2,7 +2,11 @@ class RemoveGoogleCalendarJob < ApplicationJob
   include BakerGoogle
   queue_as :default
 
-  def perform(google_calendar)
+  def perform(google_calendar_id)
+    google_calendar = GoogleCalendar.find(google_calendar_id)
+    if google_calendar.nil?
+      return
+    end
     service = google_service(refresh_token: google_calendar.refresh_token)
     should_retry = false
     remove_ids = []

@@ -42,10 +42,19 @@ module Bakerapi
       {role: :host, resourced: true, rank: 3}
     ]
     config.team_roles = [
+      {role: :director, name: 'Director', resourced: true},
       {role: :leader, name: 'Leader', resourced: true}, 
       {role: :onhill, name: 'OEC', resourced: true}, 
       {role: :host, name: 'Host', resourced: true},
       {role: :aidroom, name: 'Aid Room', resourced: true}
     ] 
+
+    config.team_extra_roles = [
+      {role: :senior, name: 'Senior Alpine', resourced: false},
+      {role: :rigger, name: 'Rigger', resourced: true},
+      {role: :avy1, name: 'Avy 1', resourced: false},
+      {role: :avy2, name: 'Avy 2', resourced: false},
+      {role: :mtr, name: 'MTR', resourced: false}
+    ]
   end
 end

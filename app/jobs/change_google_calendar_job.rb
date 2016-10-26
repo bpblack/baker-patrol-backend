@@ -2,8 +2,12 @@ class ChangeGoogleCalendarJob < ApplicationJob
   include BakerGoogle
   queue_as :default
 
-  def perform(user, old_calendar_id)
+  def perform(user_id, old_calendar_id)
     # get all the info for the calendar events into an array of hashes, 1 DB hit
+    user = User.find(user_id);
+    if user.nil?
+      return;
+    end
     gc = user.google_calendar
     future_patrol_ids = user.patrols.includes(:duty_day).where("duty_days.date >= :today", {today: Date.today}).pluck(:id)
 

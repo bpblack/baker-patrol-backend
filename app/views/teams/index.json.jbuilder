@@ -4,6 +4,6 @@ json.roster @teams.each do |team|
     json.name rs.user.name
     json.email rs.user.email
     json.phone rs.user.phone
-    json.roles "#{rs.team_roles_string}, #{rs.team_roles_extra_string}"
+    json.roles rs.team_all_roles_string
   end 
 end

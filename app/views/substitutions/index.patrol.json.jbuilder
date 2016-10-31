@@ -1,12 +1,20 @@
-json.sub_history @patrol_with_subs.substitutions do |s|
+json.sub_history @patrol_with_subs.substitutions.each_with_index.to_a do |s, i|
   json.(s, :id, :reason, :accepted)
   json.subbed do
-   json.(s.user, :id, :name)
+    json.(s.user, :id, :name)
+    if (i == 0)
+      json.phone s.user.phone
+      json.skills s.user.season_roster_spot(@patrol_with_subs.duty_day.season_id).team_all_roles_string
+    end
   end
   json.sub do
     if s.sub
       json.id s.sub.id
       json.name s.sub.name
+      if (i == 0)
+        json.phone s.sub.phone
+        json.skills s.sub.season_roster_spot(@patrol_with_subs.duty_day.season_id).team_all_roles_string
+      end
     else 
       json.id nil
       json.name ''

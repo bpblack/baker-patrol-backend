@@ -119,8 +119,9 @@ class SubstitutionsController < ApplicationController
   def reject
     @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
     authorize @substitution #user must be the sub 
+    sub_name = @substitution.sub.name
     @substitution.update!(sub: nil)
-    SubstitutionMailer.reject_sub_request(@substitution, params[:message]).deliver_later
+    SubstitutionMailer.reject_sub_request(@substitution, sub_name, params[:message]).deliver_later
   end
 
   def remind

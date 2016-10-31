@@ -22,9 +22,9 @@ class RosterSpot < ApplicationRecord
   private 
   def roles_str roles_array
     roles = []
-    has_roles_method = user.roles.loaded? ? :has_cached_role? : :has_role?
+    user.roles.load_target unless user.roles.loaded?
     roles_array.each do |role|
-      roles << role[:name] if user.method(has_roles_method).call(role[:role], role[:resourced] ? self : nil)
+      roles << role[:name] if user.has_cached_role?(role[:role], role[:resourced] ? self : nil)
     end
     roles.join(', ')
   end

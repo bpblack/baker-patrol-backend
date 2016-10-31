@@ -13,12 +13,12 @@ class SubstitutionMailer < ApplicationMailer
          subject: "[PATROL] #{@sub_for} requests a substitution on #{@date} (#{@responsibility})"
   end
 
-  def reject_sub_request(substitution, sub_name, message)
+  def reject_sub_request(substitution, sub_name, sub_email, message)
     @message = message
     init_assign_accept_reject_members(substitution)
     @sub_name = sub_name
     mail to: substitution.user.email,
-         reply_to: substitution.sub.email,
+         reply_to: sub_email,
          subject: "[PATROL] #{@sub_name} has rejected your sub request on #{@date} (#{@responsibility})"
   end
 

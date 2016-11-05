@@ -90,7 +90,7 @@ Rails.application.configure do
   }
 
   #URL for use in mailers
-  config.email_url = 'https://mtbakervoly.herokuapp.com'
+  config.email_url = 'https://volypatrol.mtbaker.us'
 
   #google calendar configuration
   config.google = {

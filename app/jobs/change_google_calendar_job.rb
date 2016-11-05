@@ -28,7 +28,7 @@ class ChangeGoogleCalendarJob < ApplicationJob
       if old_calendar_id && patrol_summaries[:move].length > 0
         service.batch do |s|
           patrol_summaries[:move].each do |ps|
-            unless ps.uuid.nil?
+            unless ps[:uuid].nil?
               s.move_event(old_calendar_id, ps[:uuid], calendar_id) do |res, err| 
                 if err
                   should_retry |= google_batch_error(err)
@@ -45,7 +45,7 @@ class ChangeGoogleCalendarJob < ApplicationJob
         service.batch do |s|
           patrol_summaries[:create].each do |ps|
             #only create an event if it doesn't have a calendar entry
-            if ps.uuid.nil?
+            if ps[:uuid].nil?
               event = google_event(date: ps[:date], team: ps[:team], responsibility: ps[:responsibility])
               s.insert_event(calendar_id, event) do |res, err|
                 if err

@@ -13,8 +13,10 @@ class User < ApplicationRecord
   has_one  :google_calendar_relation, -> { where(calendar_type: 'GoogleCalendar') }, class_name: 'Calendar'
   has_one  :google_calendar, through: :google_calendar_relation, source: :calendar, source_type: 'GoogleCalendar' 
   validates :password, length: {minimum: 8}, format: { with: /\A[[:alnum:][:punct:]]{8,72}\z/ }, if: :password_validation?
-  validates :first_name, presence: true
-  validates :last_name, presence: true
+  validates :first_name, presence: true, format: { with: /\A[a-z\s'.-]+\z/i }
+  validates :last_name, presence: true, format: { with: /\A[a-z\s'.-]+\z/i }
+  validates :email, presence: true, format: { with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/ }, uniqueness: { case_sensitive: false }
+  validates :phone, format: { with: /\A\(\d{3}\)\d{3}-\d{4}\z/ }
 
   scope :subables, -> (ignore_ids, season_id, role_sym) {
     #joins(:seasons, :roles).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?) AND EXISTS (SELECT 1 FROM roles WHERE role_name LIKE ?)', season_id, role_sym)

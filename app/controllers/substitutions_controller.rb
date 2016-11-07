@@ -49,8 +49,9 @@ class SubstitutionsController < ApplicationController
   def create
     # test that patrol owned by current user or current user is admin
     if params[:patrol_id]
+      full_sanitizer = Rails::Html::FullSanitizer.new
       patrol = Patrol.includes(:duty_day, :user, {patrol_responsibility: :role}).find(params[:patrol_id])
-      @substitution = Substitution.new(user_id: patrol.user_id, patrol: patrol, reason: params[:reason])
+      @substitution = Substitution.new(user_id: patrol.user_id, patrol: patrol, reason: full_sanitizer.sanitize(params[:reason]))
       if params[:assigned_id]
         sub = params[:assigned_id].to_i == 0 ? nil : User.find(params[:assigned_id])
         if sub.nil?
@@ -78,7 +79,7 @@ class SubstitutionsController < ApplicationController
         if @substitution.sub_id.nil?
           ignores = patrol.duty_day.ignores
           emails = User.subables(ignores, patrol.duty_day.season_id, patrol.patrol_responsibility.role.name).pluck(:email)
-          SubstitutionMailer.request_sub(@substitution, emails, params[:message]).deliver_later
+          SubstitutionMailer.request_sub(@substitution, emails, full_sanitizer.sanitize(params[:message])).deliver_later
         else
           SubstitutionMailer.assign_sub(@substitution).deliver_later
         end
@@ -121,7 +122,8 @@ class SubstitutionsController < ApplicationController
     authorize @substitution #user must be the sub 
     sub_name, sub_email = @substitution.sub.name, @substitution.sub.email
     @substitution.update!(sub: nil)
-    SubstitutionMailer.reject_sub_request(@substitution, sub_name, sub_email, params[:message]).deliver_later
+    full_sanitizer = Rails::Html::FullSanitizer.new
+    SubstitutionMailer.reject_sub_request(@substitution, sub_name, sub_email, full_sanitizer.sanitize(params[:message])).deliver_later
   end
 
   def remind
@@ -138,7 +140,8 @@ class SubstitutionsController < ApplicationController
       else
         emails = [@substitution.sub.email]
       end
-      SubstitutionMailer.remind(@substitution, emails, params[:message]).deliver_later
+      full_sanitizer = Rails::Html::FullSanitizer.new
+      SubstitutionMailer.remind(@substitution, emails, full_sanitizer.sanitize(params[:message])).deliver_later
       head :no_content
     end
   end

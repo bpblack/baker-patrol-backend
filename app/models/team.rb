@@ -1,4 +1,5 @@
 class Team < ApplicationRecord
+  attr_accessor :roster_season_id
   has_many :roster_spots
   has_many :duty_days
   validates_uniqueness_of :name

@@ -41,6 +41,9 @@ class UsersController < ApplicationController
       if r.name.to_sym == :leader  
         rs = RosterSpot.find(r.resource_id)    
         {role: :leader, team_id: rs.team_id, season_id: rs.season_id}    
+      elsif r.name.to_sym == :staff
+        rs = RosterSpot.find(r.resource_id)
+        {role: :staff, team_id: nil, season_id: rs.season_id}
       else    
         {role: r.name.to_sym}    
       end  

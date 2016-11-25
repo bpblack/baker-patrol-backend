@@ -2,7 +2,7 @@ class DutyDaysController < ApplicationController
   before_action :authenticate_user
   
   def index
-    authorize DutyDay
+    authorize DutyDay.new(season_id: params[:season_id])
     if (params[:season_id])
       @duty_days = DutyDay.includes(:team).where(season_id: params[:season_id]).order(:date)
       render json: @duty_days.as_json(include: [{team: {only: [:id, :name]}}], only: [:id, :date]), status: :ok
@@ -24,7 +24,9 @@ class DutyDaysController < ApplicationController
       end
       ret
     end
-    @isAdmin = current_user.has_role?(:admin) || current_user.has_role?(:leader, current_user.roster_spots.find_by(season_id: @duty_day.season_id, team_id: @duty_day.team_id))
+    @isAdmin = current_user.has_role?(:admin) || 
+      current_user.has_role?(:leader, current_user.roster_spots.find_by(season_id: @duty_day.season_id, team_id: @duty_day.team_id)) || 
+      current_user.has_role?(:staff, current_user.roster_spots.find_by(season_id: @duty_day.season_id)) 
     render 'duty_days/show.json.jbuilder', status: :ok
   end  
 end

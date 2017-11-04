@@ -23,7 +23,7 @@ class TeamsController < ApplicationController
   private
   def render_team_with_duty_days(id:, season_id:)
     @team = Team.season_roster_spots(season_id: season_id, preload: true).find(id)
-    @team.duty_days.where(season_id: season_id)
+    @duty_days = @team.duty_days.where(season_id: season_id)
     render 'teams/show.json.jbuilder', status: :ok
   end
 end

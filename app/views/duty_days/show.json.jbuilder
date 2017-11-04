@@ -7,7 +7,11 @@ json.patrols @sorted_patrols do |p|
   json.(p, :id)
   json.patroller do |json|
     json.(p.user, :id, :name)
-    json.skills p.user.season_roster_spot(@duty_day.season_id).team_all_roles_string
+    if p.user.season_roster_spot(@duty_day.season_id).nil?
+      json.skills ''
+    else 
+      json.skills p.user.season_roster_spot(@duty_day.season_id).team_all_roles_string
+    end
     json.(p.user, :phone) if @isAdmin
   end
   json.responsibility do |json|

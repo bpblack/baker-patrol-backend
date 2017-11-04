@@ -108,22 +108,26 @@ class SubstitutionsController < ApplicationController
   def accept
     @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
     authorize @substitution #user must be the sub
-    Substitution.transaction do
-      @substitution.update!(accepted: true)
-      @substitution.patrol.update!(user_id: @substitution.sub_id)
+    unless @substitution.accepted #don't send multiple emails on double click, second call accepted will be true
+      Substitution.transaction do
+        @substitution.update!(accepted: true)
+        @substitution.patrol.update!(user_id: @substitution.sub_id)
+      end
+      SubstitutionMailer.accept_sub_request(@substitution).deliver_later
+      SubstitutionGoogleCalendarJob.perform_later(@substitution)
     end
-    SubstitutionMailer.accept_sub_request(@substitution).deliver_later
-    SubstitutionGoogleCalendarJob.perform_later(@substitution)
     head :no_content
   end
 
   def reject
     @substitution = Substitution.includes(:user, :sub, {patrol: :duty_day}).find(params[:id])
     authorize @substitution #user must be the sub 
-    sub_name, sub_email = @substitution.sub.name, @substitution.sub.email
-    @substitution.update!(sub: nil)
-    full_sanitizer = Rails::Html::FullSanitizer.new
-    SubstitutionMailer.reject_sub_request(@substitution, sub_name, sub_email, full_sanitizer.sanitize(params[:message])).deliver_later
+    if @substitution.sub #don't send multiple emails if there's a double click, second call sub will be nil
+      sub_name, sub_email = @substitution.sub.name, @substitution.sub.email
+      @substitution.update!(sub: nil)
+      full_sanitizer = Rails::Html::FullSanitizer.new
+      SubstitutionMailer.reject_sub_request(@substitution, sub_name, sub_email, full_sanitizer.sanitize(params[:message])).deliver_later
+    end
   end
 
   def remind

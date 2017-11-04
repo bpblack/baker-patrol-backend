@@ -9,5 +9,5 @@ end
 json.patrollers @team.sorted_members do |rs|
   json.(rs.user, :id, :name) unless @team.leader && rs.id == @team.leader.id
 end
-json.duty_days @team.duty_days, :id, :date
+json.duty_days @duty_days, :id, :date
 

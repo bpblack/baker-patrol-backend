@@ -37,7 +37,8 @@ class UsersController < ApplicationController
       methods: :name,
       include: [{seasons: {only: [:id, :name, :start, :end]}}]
     )
-    json[:roles] = @user.roles.map do |r|
+    latest_rs_id = @user.roster_spots[-1].id
+    json[:roles] = @user.roles.select {|r| r.resource_id.nil? || r.resource_id == latest_rs_id}.map do |r|
       if r.name.to_sym == :leader  
         rs = RosterSpot.find(r.resource_id)    
         {role: :leader, team_id: rs.team_id, season_id: rs.season_id}    

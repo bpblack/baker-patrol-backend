@@ -36,7 +36,7 @@ class Substitution < ApplicationRecord
     end
     case future
     when true, false
-      where_conds[:today] = Date.today
+      where_conds[:today] = Time.zone.today
       where_sql += future ? ' AND duty_days.date >= :today' : ' AND duty_days.date < :today'
     else
       #do nothing
@@ -60,7 +60,7 @@ class Substitution < ApplicationRecord
 
   def completed?
     # any changes after accepted, accepted was changed but was already true, date is in the past
-    (!accepted_changed? && accepted) || (accepted_changed? && accepted_change[0]) || patrol.duty_day.date < Date.today
+    (!accepted_changed? && accepted) || (accepted_changed? && accepted_change[0]) || patrol.duty_day.date < Time.zone.today
   end
 
   def only_authorize_admin?
@@ -70,7 +70,7 @@ class Substitution < ApplicationRecord
   private
 
   def patrol_date_cannot_be_in_past
-    if patrol.duty_day.date < Date.today
+    if patrol.duty_day.date < Time.zone.today
       errors.add(:substitution_date, 'Cannot create substitituion request for a duty day that has already occured.')
     end
   end

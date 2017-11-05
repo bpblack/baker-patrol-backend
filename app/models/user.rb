@@ -21,8 +21,9 @@ class User < ApplicationRecord
   scope :subables, -> (ignore_ids, season_id, role_sym) {
     #joins(:seasons, :roles).where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM seasons where id = ?) AND EXISTS (SELECT 1 FROM roles WHERE role_name LIKE ?)', season_id, role_sym)
     joins(:roster_spots).merge(RosterSpot.where(season_id: season_id)).
-    joins(:roles).merge(Role.where(name: role_sym)).
-    where.not(id: ignore_ids).where('EXISTS (SELECT 1 FROM roles WHERE resource_id=roster_spots.id)').
+    #joins(:roles).merge(Role.where(name: role_sym)).
+    joins("INNER JOIN users_roles ON users_roles.user_id = users.id INNER JOIN roles ON roles.id = users_roles.role_id AND roles.resource_id = roster_spots.id").
+    where("roles.name = ?", role_sym).where.not(id: ignore_ids).#where('EXISTS (SELECT 1 FROM roles WHERE resource_id=roster_spots.id)').
     order(:last_name)
   }
 

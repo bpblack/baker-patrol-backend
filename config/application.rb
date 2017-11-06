@@ -32,13 +32,13 @@ module Bakerapi
 
     # array of roles, resourced indicates whether it is tied to a roster spot
     config.duty_day_patrol_ranks = {
-      role: { onhill: 1, aidroom: 2, host: 3},
+      role: { onhill: 1, tbgntrainer: 2, avytrainer: 3, host: 4},
       responsibility: {team_leader: 1, unspecified: 2, base: 3}
     }
     config.team_role_ranks = [
+      {role: :director, resourced: true, rank: 0},
       {role: :leader, resourced: true, rank: 1},
       {role: :onhill, resourced: true, rank: 2},
-      {role: :aidroom, resourced: true, rank: 2},
       {role: :host, resourced: true, rank: 3}
     ]
     config.team_roles = [
@@ -46,7 +46,6 @@ module Bakerapi
       {role: :leader, name: 'Leader', resourced: true}, 
       {role: :onhill, name: 'OEC', resourced: true}, 
       {role: :host, name: 'Host', resourced: true},
-      {role: :aidroom, name: 'Aid Room', resourced: true}
     ] 
 
     config.team_extra_roles = [

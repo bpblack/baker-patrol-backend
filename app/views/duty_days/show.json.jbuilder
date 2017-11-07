@@ -6,13 +6,20 @@ end
 json.patrols @sorted_patrols do |p|
   json.(p, :id)
   json.patroller do |json|
-    json.(p.user, :id, :name)
-    if p.user.season_roster_spot(@duty_day.season_id).nil?
-      json.skills ''
-    else 
-      json.skills p.user.season_roster_spot(@duty_day.season_id).team_all_roles_string
+    if(p.user.nil?)
+      json.id nil
+      json.name 'Not Assigned'
+      json.skills 'N/A'
+      json.phone 'N/A' if @isAdmin
+    else
+      json.(p.user, :id, :name)
+      if p.user.season_roster_spot(@duty_day.season_id).nil?
+        json.skills ''
+      else 
+        json.skills p.user.season_roster_spot(@duty_day.season_id).team_all_roles_string
+      end
+      json.(p.user, :phone) if @isAdmin
     end
-    json.(p.user, :phone) if @isAdmin
   end
   json.responsibility do |json|
     json.(p.patrol_responsibility, :id, :name, :version)

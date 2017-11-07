@@ -27,6 +27,9 @@ Rails.application.routes.draw do
       end
       resources :duty_days, only: [] do
         resources :substitutions, path: 'latest_subs', only: [:index]
+        member do
+          get 'available_patrollers'
+        end
       end
     end
     resources :seasons, only: [] do

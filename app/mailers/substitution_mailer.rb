@@ -9,7 +9,7 @@ class SubstitutionMailer < ApplicationMailer
   def assign_sub(substitution)
     init_assign_accept_reject_members(substitution)
     mail to: substitution.sub.email,
-         reply_to: substitution.user.email,
+         reply_to: accept_reject_email_address(substitution),
          subject: "[PATROL] #{@sub_for} requests a substitution on #{@date} (#{@responsibility})"
   end
 
@@ -17,14 +17,14 @@ class SubstitutionMailer < ApplicationMailer
     @message = message
     init_assign_accept_reject_members(substitution)
     @sub_name = sub_name
-    mail to: substitution.user.email,
+    mail to: accept_reject_email_address(substitution),
          reply_to: sub_email,
          subject: "[PATROL] #{@sub_name} has rejected your sub request on #{@date} (#{@responsibility})"
   end
 
   def accept_sub_request(substitution)
     init_assign_accept_reject_members(substitution)
-    mail to: substitution.user.email,
+    mail to: accept_reject_email_address(substitution),
          reply_to: substitution.sub.email,
          subject: "[PATROL] #{@sub_name} has accepted your sub request on #{@date} (#{@responsibility})"
   end
@@ -40,8 +40,16 @@ class SubstitutionMailer < ApplicationMailer
   
   def init_assign_accept_reject_members(substitution)
     @sub_name = substitution.sub.nil? ? '' : substitution.sub.name
-    @sub_for = substitution.user.name
+    @sub_for = substitution.user.nil? ? 'Not Assigned' : substitution.user.name
     @date = substitution.patrol.duty_day.date.strftime('%m/%d/%Y')
     @responsibility = substitution.patrol.patrol_responsibility.name
+  end
+
+  def accept_reject_email_address(substitution)
+    if substitution.user.nil?
+      substitution.patrol.duty_day.team.leader(substitution.patrol.duty_day.season_id).user.email
+    else
+      substitution.user.email
+    end
   end
 end

@@ -2,7 +2,7 @@ class Patrol < ApplicationRecord
   attr_accessor :skip_responsibility_validation
   after_initialize :initialize_skip_responsibility_validation
   
-  belongs_to :user
+  belongs_to :user, optional: true
   belongs_to :duty_day
   belongs_to :patrol_responsibility, optional: :skip_responsibility_validation
   has_many :substitutions, -> { order(id: :desc) }
@@ -10,7 +10,7 @@ class Patrol < ApplicationRecord
   has_many :calendar_events
   has_one :google_event, -> { where(owner_type: 'GoogleCalendar') }, class_name: 'CalendarEvent'
 
-  validates_uniqueness_of :user_id, scope: :duty_day_id
+  validates_uniqueness_of :user_id, scope: :duty_day_id, unless: Proc.new { |p| p.user.nil? }
   validates_uniqueness_of :patrol_responsibility_id, scope: :duty_day_id, unless: :skip_responsibility_validation
   validate :user_has_responsibility_role, unless: Proc.new { |p| p.skip_responsibility_validation and p.patrol_responsibility.nil? }
 
@@ -33,6 +33,7 @@ class Patrol < ApplicationRecord
   end
 
   def user_has_responsibility_role
+    return if user.nil?
     responsibility_role_name =  patrol_responsibility.role.name
     unless user.has_role?(responsibility_role_name.to_sym, user.season_roster_spot(duty_day.season_id))
       error_role_string = %w(a e i o u).include?(responsibility_role_name.downcase) ? "an #{responsibility_role_name}" : "a #{responsibility_role_name}"

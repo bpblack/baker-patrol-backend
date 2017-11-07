@@ -3,7 +3,7 @@ class Substitution < ApplicationRecord
   after_initialize :initialize_only_authorize_admin
   
   belongs_to :patrol
-  belongs_to :user, class_name: 'User'
+  belongs_to :user, class_name: 'User', optional: true
   belongs_to :sub, class_name: 'User', optional: true
 
   validates :patrol, presence: true

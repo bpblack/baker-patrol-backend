@@ -11,7 +11,7 @@ class SubstitutionGoogleCalendarJob < ApplicationJob
 
     # remove the event from the previous owner's calendar
     user = substitution.user
-    unless user.google_calendar.nil? || patrol.google_event.nil?
+    unless user.nil? || user.google_calendar.nil? || patrol.google_event.nil?
       google_service(refresh_token: user.google_calendar.refresh_token).delete_event(user.google_calendar.calendar_id, patrol.google_event.uuid) do |res, err|
         if err && google_batch_error(err)
           retry_job(wait: 30.minutes)

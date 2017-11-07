@@ -29,4 +29,11 @@ class DutyDaysController < ApplicationController
       current_user.has_role?(:staff, current_user.roster_spots.find_by(season_id: @duty_day.season_id)) 
     render 'duty_days/show.json.jbuilder', status: :ok
   end  
+
+  def available_patrollers
+    @duty_day = DutyDay.find(params[:id])
+    authorize @duty_day
+    available = User.subables(@duty_day.ignores, @duty_day.season_id, :onhill).pluck(:email)
+    render json: {emails: available}, status: :ok
+  end 
 end

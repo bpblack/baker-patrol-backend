@@ -10,8 +10,8 @@ class Team < ApplicationRecord
   }
 
   # new data is added so infrequently that caching in member var *should* be ok
-  def leader
-    @leader = roster_spots.find do |rs| 
+  def leader(season_id)
+    @leader = roster_spots.where(season_id: season_id).find do |rs| 
       user = rs.user  
       user.method(user.roles.loaded? ? :has_cached_role? : :has_role?).call(:leader, rs) 
     end unless @leader

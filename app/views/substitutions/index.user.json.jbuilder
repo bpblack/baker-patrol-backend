@@ -21,8 +21,13 @@ json.substitutions @substitutions do |s|
     json.date s.date
   end
   json.sub_for do |json|
-    json.id s.user.id
-    json.name s.user.name
+    if s.user.nil?
+      json.id nil
+      json.name 'Not Assigned'
+    else 
+      json.id s.user.id
+      json.name s.user.name
+    end
   end
   json.responsibility do |json|
     json.name s.patrol.patrol_responsibility.name

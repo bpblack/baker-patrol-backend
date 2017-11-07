@@ -7,7 +7,7 @@ class DutyDay < ApplicationRecord
   def ignores
     ret = []
     patrols.each do |p|
-      ret.push p.user.id
+      ret.push p.user.id unless p.user.nil?
       unless p.latest_substitution.nil? || p.latest_substitution.accepted || p.latest_substitution.sub.nil?
         ret.push p.latest_substitution.sub_id
       end

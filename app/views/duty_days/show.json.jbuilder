@@ -11,6 +11,7 @@ json.patrols @sorted_patrols do |p|
       json.name 'Not Assigned'
       json.skills 'N/A'
       json.phone 'N/A' if @isAdmin
+      json.email nil if @isAdmin
     else
       json.(p.user, :id, :name)
       if p.user.season_roster_spot(@duty_day.season_id).nil?
@@ -19,6 +20,7 @@ json.patrols @sorted_patrols do |p|
         json.skills p.user.season_roster_spot(@duty_day.season_id).team_all_roles_string
       end
       json.(p.user, :phone) if @isAdmin
+      json.(p.user, :email) if @isAdmin
     end
   end
   json.responsibility do |json|

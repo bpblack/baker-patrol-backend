@@ -7,7 +7,7 @@ class TeamsController < ApplicationController
         rs = RosterSpot.find_by(user_id: params[:user_id], season_id: params[:season_id])
         render_team_with_duty_days(id: rs.team_id, season_id: params[:season_id])
       else
-        authorize Team.new(roster_season_id: params[:season_id])
+        #authorize Team.new(roster_season_id: params[:season_id])
         @teams = Team.season_roster_spots(season_id: params[:season_id], preload: true).all
         render formats: [:json], status: :ok
       end

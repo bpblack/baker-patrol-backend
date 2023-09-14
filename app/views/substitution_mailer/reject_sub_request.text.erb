@@ -1,0 +1,11 @@
+<%= @sub_for %>,
+
+<%= @sub_name %> has rejected your sub request for <%= @date %> (<%= @responsibility %>). You can reply to this email if you need to discuss this further with <%= @sub_name %>; otherwise, you can login to <%= Rails.application.config.email_url %> to assign the patrol to someone else.
+
+<% if @message.blank? %>
+Thanks!
+<% else %>
+<%= @sub_name %> added the following message:
+
+<%= @message %>
+<% end %>

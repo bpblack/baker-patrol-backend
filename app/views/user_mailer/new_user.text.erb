@@ -1,0 +1,8 @@
+<%= @user.name %>,
+
+A Mt. Baker Volunteer Patrol account has been created for you. In order to use this account, you must first reset your password by going to the url below:
+
+<%= Rails.application.config.email_url %>/Reset/<%= @user.password_reset_token %>
+
+Once you have reset your password, you may login using <%= @user.email %> and your new password at <%= Rails.application.config.email_url %>.
+

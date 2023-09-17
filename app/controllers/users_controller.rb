@@ -22,7 +22,7 @@ class UsersController < ApplicationController
       end
     end
     if (!error)
-      @user.update_attributes!(update)
+      @user.update!(**update)
       head :no_content
     else
       render json: {error: error}, status: :not_acceptable

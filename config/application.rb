@@ -31,7 +31,8 @@ module Bakerapi
     config.api_only = true
     config.active_job.queue_adapter = :sucker_punch
     config.time_zone = "Pacific Time (US & Canada)"
-    config.autoload_paths << "#{Rails.root}/lib"
+    config.autoload_paths << "#{Rails.root}/lib/"
+    config.autoload_paths << "#{Rails.root}/lib/modules"
 
     # array of roles, resourced indicates whether it is tied to a roster spot
     config.duty_day_patrol_ranks = {

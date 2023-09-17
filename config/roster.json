@@ -1,0 +1,87 @@
+{
+	"trainer": [
+		["Krister", "Fast", "kkfast@yahoo.com", "(360)220-2196", ["director", "admin", "senior"]],
+		["Dave", "May", "dave_may@q.com", "(360)738-1103", ["senior"]],
+		["Jeff", "Boyd", "jsb57@comcast.net", "(360)201-9602", ["senior", "avy2"]],
+		["Max", "Duncan", "duncanmfd@gmail.com", "(360)599-1730", ["mtr", "avy2"]], 
+		["Kelly", "Keilwitz", "kelly@whidbeysunwind.com", "(360)678-6233", ["mtr", "avy2"]],
+		["Dick", "Tucker", "rtu2271093@aol.com", "(360)734-8815", []],
+		["Britta", "Fast", "britta.fast@outlook.com", "(360)739-0236", []],
+		["Jason", "Kammerer", "kammererjason@hotmail.com", "(360)820-1233", []],
+		["Mary", "Davis", "maryennesdavis@gmail.com", "(360)224-7516", ["mtr"]],
+		["Jeff", "Davis", "Jeff.Davis@wwu.edu", "(360)920-8041", []], 
+		["Bob", "Hollingsworth", "bobjhollingsworth@gmail.com", "(360)733-7126", ["mtr"]],
+		["Erica", "Littlewood", "ericabellingham@gmail.com", "(360)647-9382", ["mtr"]]
+	],
+	"midweek": [
+		["Bruce", "Rustad", "brucerustad@comcast.net", "(360)293-3329", ["senior"]],
+		["Ken", "Henderson", "khenders@kirklandwa.gov", "(360)387-7199", ["mtr", "avy2", "senior"]],
+		["Dave", "Richards", "clickpop@mac.com", "(360)961-9759", []],
+		["Darrel", "Vaught", "devaughts@comcast.net", "(360)738-8967", []],
+		["Daniel", "Sandler", "danielsandler25@gmail.com", "(206)660-3750", []],
+		["Tim", "Andress", "tandress@hotmail.com", "(360)927-8562", []],
+		["Brian", "Gilbert", "gilbebl@hotmail.com", "(360)420-6343", []],
+		["John", "Wilkins", "johnlwilkins@gmail.com", "(360)223-0179", []],
+		["Adam", "Morvee", "adammorvee@gmail.com", "(360)927-1723",[]]
+	],
+	"midweek_hosts": [],
+	"a": [
+		["Gerald", "Craft", "craftgerald@yahoo.com", "(360)920-7708", ["mtr"]],
+		["Damian", "Provalenko", "damian@windermere.com", "(360)303-5072", []],
+		["Walter", "Channel", "walterchannel@gmail.com", "(425)615-4618", []],
+		["Kyle", "Breakey", "kyle.breakey@yahoo.com", "(509)969-9612", ["mtr", "avy2", "senior", "rigger"]],
+		["Dan", "Dickinson", "dandebdickinson@gmail.com", "(360)920-3380", ["mtr"]],
+		["Giancarlo", "Bussani", "liv2ride621@gmail.com", "(604)772-0901", []],
+		["Brian", "MacSwan", "bmacsurf@yahoo.com", "(360)927-8534", ["mtr"]],
+		["Andy", "Hatfield", "andrew.hatfield@pse.com", "(360)593-1578", ["senior", "rigger", "mtr"]],
+		["Stephanie", "Bostwick", "slbostwick@hotmail.com", "(310)431-8156", []],
+		["Ellen", "Hatfield", "hatfieldellen7@gmail.com", "(360)599-3954", []],
+		["Trevor", "Hodge", "Depuytemplates@yahoo.com", "(360)483-9770", []]
+	],
+	"a_hosts": [],
+	"b": [
+		["Dan", "Olson", "wiskiguy@hotmail.com", "(360)224-4182", []],
+		["Kurt", "Miller", "kmilhaus@msn.com", "(360)303-5978", []],
+		["Miyabi", "Gladstein", "miyabiglad@yahoo.com", "(360)421-5359", ["mtr"]],
+		["Michael", "Hamilton", "mhamiltoe@hotmail.com", "(604)853-3018", []],
+		["Sean", "Gombasy", "seangombasy@gmail.com", "(206)830-0187", ["avy2"]],
+		["Olivia", "Weeks", "osweeks@gmail.com", "(973)727-0249", []],
+		["Chris", "Blanchard", "blanchard.ce@gmail.com", "(610)608-9411", []],
+		["Jack", "Thompson", "johnjackthompsonv@gmail.com", "(360)306-7543", []], 
+		["Corey", "Fish", "coreyafish@gmail.com", "(360)391-9279", []],
+		["Izzy", "Eelnurme", "izzyeelnurme@comcast.net", "(425)870-4604", []],
+		["Claire", "Hoover", "clairerhoover@gmail.com", "(206)755-3080", ["mtr"]]
+	],
+	"b_hosts": [],
+	"c": [
+		["Jusin", "Mitchell", "rcknice@aol.com", "(360)676-9565", ["rigger"]],
+		["Andrea", "Naviaux", "alnaviaux@msn.com", "(360)303-6622", ["senior", "avy2"]],
+		["Dennis", "Larson", "dennis.l.larson@comcast.net", "(425)237-3492", ["senior"]],
+		["Forest", "Chiavario", "forestchiavario@gmail.com", "(360)303-8114", ["rigger"]],
+		["Gunnar", "Morin", "morin.gunnar@gmail.com", "(303)906-0480", []],
+		["Jesse", "Arroyo", "jessewarroyo@gmail.com", "(505)712-9269", []],
+		["Keith", "Poynter", "keithepoynter@gmail.com", "(360)410-1751", []],
+		["Kirk", "Desler", "kjdesler@hotmail.com", "(360)391-7818", []],
+		["Matt", "McSweyn", "cooper30@gmail.com", "(206)947-2172", []],
+		["Luke", "Pronker", "lukepronker@gmail.com", "(360)820-3507", []],
+		["Trevor", "LeDain", "trev4short@mac.com", "(206)595-0479", []]
+	],
+	"c_hosts": [],
+	"d":[
+		["Brian", "Black", "bpblack04@mac.com", "(339)987-0711", ["rigger", "mtr", "avy2"]],
+		["Shaun", "Almassy", "shaunalmassy@gmail.com", "(360)927-5363", ["mtr"]],
+		["Johnny", "Angier", "angierjohnny@gmail.com", "(360)527-6606", []],
+		["Wayne", "Chaudiere", "chaudiere@whatcomcd.org", "(360)319-7508", []],
+		["Alan", "Freysinger", "ajf2417@gmail.com", "(414)588-4252", []],
+		["Tory", "Hayssen", "toryhayssen@gmail.com", "(413)834-1330", []],
+		["Tristan", "Jones", "tristanjones_@outlook.com", "(425)233-0526", []],
+		["Kevin", "Kaiser", "kevinrkaiser@yahoo.com", "(360)319-7257", ["rigger"]],
+		["Brandon", "Lee", "botanicalmaple@gmail.com", "(360)920-5567", []],
+		["Drew", "Sampson", "drewsampson@comcast.net", "(360)220-9430", []],
+		["Curran", "Wilbour", "skicurran@gmail.com", "(360)296-1951", []]
+	],
+	"d_hosts": [
+		["Todd", "Peed", "todd@nwhomes.net", "(360)303-9447"],
+		["Becca", "Steinkamp", "becca@steinkamp.us", "(360)303-9467"]
+	]
+}

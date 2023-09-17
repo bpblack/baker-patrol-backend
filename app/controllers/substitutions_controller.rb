@@ -35,12 +35,12 @@ class SubstitutionsController < ApplicationController
       # all subs for a patrol
       @patrol_with_subs = Patrol.duty_day_team_responsibility_subs(params[:patrol_id])
       authorize Substitution.new({patrol: @patrol_with_subs}) #current user must be admin or team leader
-      render 'substitutions/index.patrol.json.jbuilder', status: :ok
+      render :index_patrol, formats: [:json], status: :ok
     elsif params[:duty_day_id].present?
       # all subs for a duty day
       authorize Substitution.new({patrol: Patrol.find_by(duty_day_id: params[:duty_day_id])}) #current user must be admin or team leader
       @substitutions = Substitution.duty_day_latest_subs(params[:duty_day_id], since: params[:since])
-      render 'substitutions/index.duty_day.json.jbuilder', status: :ok
+      render :index_duty_day, formats: [:json], status: :ok
     else
       render nothing: true, status: :bad_request
     end

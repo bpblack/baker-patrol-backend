@@ -17,6 +17,8 @@ class UsersController < ApplicationController
     elsif (params[:password])
       if (!@user.authenticate(params[:password]))
         error = "Password is incorrect"
+      elsif (params[:new_password] != params[:confirm_password])
+        error = "New password does not match confirmation"
       else
         update = {password: params[:new_password], password_confirmation: params[:confirm_password]}
       end
@@ -25,7 +27,7 @@ class UsersController < ApplicationController
       @user.update!(**update)
       head :no_content
     else
-      render json: {error: error}, status: :not_acceptable
+      render json: error, status: :not_acceptable
     end
   end
 
@@ -33,8 +35,8 @@ class UsersController < ApplicationController
     @user = User.includes(:seasons, :roster_spots, :roles).find(params[:id])
     authorize @user
     json = @user.as_json(
-      only: [:phone, :email],
-      methods: :name,
+      only: [:first_name, :last_name, :phone, :email],
+      #methods: :name,
       include: [{seasons: {only: [:id, :name, :start, :end]}}]
     )
     latest_rs_id = @user.roster_spots[-1].id

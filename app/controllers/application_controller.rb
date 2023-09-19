@@ -45,13 +45,13 @@ class ApplicationController < ActionController::API
 
   # turn user data (payload) to an encrypted string  [ B ]
   def encode_user_data(payload)
-    JWT.encode payload, Rails.application.secret_key_base, Rails.application.config.jwt[:signature_algorithm]
+    JWT.encode payload, Rails.application.credentials.secret_key_base, Rails.application.config.jwt[:signature_algorithm]
   end
 
   # decode token and return user info, this returns an array, [payload and algorithms] [ A ]
   def decode_user_data(token)
     begin
-      data = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: Rails.application.config.jwt[:signature_algorithm] })
+      data = JWT.decode(token, Rails.application.credentials.secret_key_base, true, { algorithm: Rails.application.config.jwt[:signature_algorithm] })
       return data
     rescue => e
       puts e

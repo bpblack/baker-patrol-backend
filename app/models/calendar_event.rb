@@ -1,5 +1,5 @@
 class CalendarEvent < ApplicationRecord
-  attr_encrypted :uuid, key: Base64.decode64(ENV['CALENDAR_EVENT_UUID_KEY'])
+  attr_encrypted :uuid, key: Rails.application.credentials.calendar_event
   belongs_to :patrol
   belongs_to :owner, polymorphic: true
 end

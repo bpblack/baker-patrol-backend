@@ -11,7 +11,7 @@ class UserTokenController < ApplicationController
       # return to user
       render json: { jwt: token }
     else
-      render json: { message: "invalid credentials" }
+      render json: "Invalid credentials" , status: 401
     end
   end
 end

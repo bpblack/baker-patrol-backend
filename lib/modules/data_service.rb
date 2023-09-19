@@ -10,6 +10,7 @@ module DataService
   end
 
   class SeasonData
+    require 'csv'
     def initialize(first, last)
       @first = first
       @last = last
@@ -51,7 +52,7 @@ module DataService
         h2: self.class.find_or_create_responsibility(name: 'Host 2', version: 1, role_id: base_role_ids[:host]),
         h3: self.class.find_or_create_responsibility(name: 'Host 3', version: 1, role_id: base_role_ids[:host]),
         h4: self.class.find_or_create_responsibility(name: 'Host 4', version: 1, role_id: base_role_ids[:host]),
-        #relbase: find_or_create_responsibility(name: 'Base', version: 15, role_id: base_role_ids[:onhill])
+        #base: find_or_create_responsibility(name: 'Base', version: 15, role_id: base_role_ids[:onhill])
       }
       @teams = {
         trainer: Team.find_by(name: 'Trainer Team').id,
@@ -62,38 +63,17 @@ module DataService
         d: Team.find_by(name: 'D Team').id,
         host: Team.find_by(name: 'Host Team').id,
       }
-      @midweek_patrols_table = [
-        Array.new(24, :lead),
-        [:mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4],
-        [:mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1],
-        [:mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2],
-        [:mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3],
-        #duplicate rows 1-4 for mapping roster
-        [:mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4],
-        [:mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1],
-        [:mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2],
-        [:mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3, :mw4, :mw1, :mw2, :mw3]
-      ]
-      @common_onhill_patrols_table_10 = [
-        Array.new(12, :lead),
-        [:p2, :s3, :p4, :s1, :p5, :s4, :p1, :p3, :s3, :s5, :s2, :s5],
-        [:s5, :s1, :s2, :p2, :s4, :p4, :p5, :s3, :p3, :p1, :s5, :s1],
-        [:s2, :s5, :p5, :s3, :p1, :s1, :p2, :p4, :s4, :s1, :p2, :p3],
-        [:p3, :s4, :s5, :p1, :p4, :p3, :s1, :s2, :p2, :p5, :s3, :p1],
-        [:p4, :p2, :s4, :s5, :p3, :s2, :s3, :p5, :s1, :s4, :p1, :p4],
-        [:s3, :p3, :p1, :s4, :s5, :p2, :p3, :s1, :p5, :p4, :p5, :s2],
-        [:s4, :p5, :p2, :p4, :s1, :s5, :p4, :p1, :s2, :s2, :p3, :s3],
-        [:p5, :s2, :s1, :p3, :s3, :p1, :s5, :p2, :p1, :p2, :p4, :s4],
-        [:s1, :p1, :p3, :s2, :p2, :s3, :s4, :s5, :p4, :s3, :s4, :p5],
-        [:p1, :p4, :s3, :p5, :s2, :p5, :s2, :s4, :s5, :p3, :s1, :p2]
-      ]
-      @host_patrols_table = [
-        [:h1, :h2, :h3, :h1, :h2, :h3, :h1, :h2, :h3, :h1, :h2, :h3],
-        [:h2, :h3, :h1, :h2, :h3, :h1, :h2, :h3, :h1, :h2, :h3, :h1],
-        [:h3, :h1, :h2, :h3, :h1, :h2, :h3, :h1, :h2, :h3, :h1, :h2],
-        [:h4, :h4, :h4, :h4, :h4, :h4, :h4, :h4, :h4, :h4, :h4, :h4]
-      ]
-      @roster = ActiveSupport::JSON.decode(File.read('config/roster.json'))
+      #load the midweek patrols from csv
+      @midweek_patrols = self.class.load_patrol_csv('config/subs/midweek_patrols.csv')
+      @midweek_patrols += @midweek_patrols #duplicate for the second team in the roster
+      @midweek_patrols.unshift(Array.new(@midweek_patrols[0].length * 2, :lead)) #double the leader duties 
+      #load the weekend patrols from csv
+      @weekend_patrols = self.class.load_patrol_csv('config/subs/weekend_patrols.csv')
+      @weekend_patrols.unshift(Array.new(@weekend_patrols[0].length, :lead))
+      #load the host patrols from csv
+      @host_patrols = self.class.load_patrol_csv('config/subs/host_patrols.csv')
+      #load the roster form json
+      @roster = ActiveSupport::JSON.decode(File.read('config/subs/roster.json'))
       puts @roster
     end
 
@@ -225,31 +205,31 @@ module DataService
         puts "Seeding Midweek team..."
         midweek = @teams[:midweek]
         midweek_duty_day_ids = DutyDay.where(season_id: @season_id, team_id: midweek).order(date: :asc).pluck(:id)
-        seed_midweek(:onhill, midweek, mapRoster(@roster['midweek'], @midweek_patrols_table), midweek_duty_day_ids)
+        seed_midweek(:onhill, midweek, mapRoster(@roster['midweek'], @midweek_patrols), midweek_duty_day_ids)
         #seed a
         puts "Seeding A team..."
         a = @teams[:a]
         a_duty_day_ids = DutyDay.where(season_id: @season_id, team_id: a).order(date: :asc).pluck(:id) #add rotation for this season
-        seed_weekend(:onhill, a, mapRoster(@roster['a'], @common_onhill_patrols_table_10), a_duty_day_ids)
-        seed_members(:host, a, mapRoster(@roster['a_hosts'], @host_patrols_table), a_duty_day_ids)
+        seed_weekend(:onhill, a, mapRoster(@roster['a'], @weekend_patrols), a_duty_day_ids)
+        seed_members(:host, a, mapRoster(@roster['a_hosts'], @host_patrols), a_duty_day_ids)
         #seed b
         puts "Seeding B team..."
         b = @teams[:b]
         b_duty_day_ids = DutyDay.where(season_id: @season_id, team_id: b).order(date: :asc).pluck(:id)
-        seed_weekend(:onhill, b, mapRoster(@roster['b'], @common_onhill_patrols_table_10), b_duty_day_ids)
-        seed_members(:host, b, mapRoster(@roster['b_hosts'], @host_patrols_table), b_duty_day_ids)
+        seed_weekend(:onhill, b, mapRoster(@roster['b'], @weekend_patrols), b_duty_day_ids)
+        seed_members(:host, b, mapRoster(@roster['b_hosts'], @host_patrols), b_duty_day_ids)
         #seed c
         puts "Seeding C team..."
         c = @teams[:c]
         c_duty_day_ids = DutyDay.where(season_id: @season_id, team_id: c).order(date: :asc).pluck(:id)
-        seed_weekend(:onhill, c, mapRoster(@roster['c'], @common_onhill_patrols_table_10), c_duty_day_ids)
-        seed_members(:host, c, mapRoster(@roster['c_hosts'], @host_patrols_table), c_duty_day_ids)
+        seed_weekend(:onhill, c, mapRoster(@roster['c'], @weekend_patrols), c_duty_day_ids)
+        seed_members(:host, c, mapRoster(@roster['c_hosts'], @host_patrols), c_duty_day_ids)
         #seed d
         puts "Seeding D team..."
         d = @teams[:d]
         d_duty_day_ids = DutyDay.where(season_id: @season_id, team_id: d).order(date: :asc).pluck(:id)
-        seed_weekend(:onhill, d, mapRoster(@roster['d'], @common_onhill_patrols_table_10), d_duty_day_ids)
-        seed_members(:host, d, mapRoster(@roster['d_hosts'], @host_patrols_table), d_duty_day_ids)
+        seed_weekend(:onhill, d, mapRoster(@roster['d'], @weekend_patrols), d_duty_day_ids)
+        seed_members(:host, d, mapRoster(@roster['d_hosts'], @host_patrols), d_duty_day_ids)
         puts "#{@name} seeding completed!"
         #only for testing
       rescue ActiveRecord::RecordInvalid => e
@@ -271,6 +251,12 @@ module DataService
         pr_id = pr.id
       end
       pr_id
+    end
+
+    def self.load_patrol_csv(name)
+      x = []
+      CSV.foreach(name) { |row| x << (row.map { |e| e.strip.to_sym})}
+      return x
     end
   end
   

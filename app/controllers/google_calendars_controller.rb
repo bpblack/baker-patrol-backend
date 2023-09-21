@@ -60,7 +60,7 @@ class GoogleCalendarsController < ApplicationController
   end
 
   def google_exception(exception)
-    render json: {error: "Google Error: #{exception.message}"}, status: :bad_reqeust
+    render json: "Google Error: #{exception.message}", status: :bad_reqeust
   end
 
   def user_not_authorized(exception)
@@ -70,6 +70,6 @@ class GoogleCalendarsController < ApplicationController
     else
       msg = "You don't have a linked Google calendar."
     end
-    render json: {error: msg}, status: :bad_request
+    render json: msg, status: :bad_request
   end
 end

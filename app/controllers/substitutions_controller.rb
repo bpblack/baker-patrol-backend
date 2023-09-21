@@ -101,7 +101,7 @@ class SubstitutionsController < ApplicationController
       render json: {id: @substitution.id, sub_id: assigned_sub.nil? ? nil : assigned_sub.id, sub_name: assigned_sub.nil? ? nil : assigned_sub.name}, status: :accepted
     else 
       patrol_responsibility = @substitution.patrol.patrol_responsibility
-      render json: {error: "#{user.name} cannot be assigned #{patrol_responsibility.versioned_name}"}, status: :bad_request
+      render json: "#{user.name} cannot be assigned #{patrol_responsibility.versioned_name}", status: :bad_request
     end
   end
 
@@ -134,9 +134,9 @@ class SubstitutionsController < ApplicationController
     @substitution = Substitution.includes(:user, :sub, {patrol: [:duty_day, :patrol_responsibility]}).find(params[:id])
     authorize @substitution #user must be admin, team leader, or the requesting patroller
     if @substitution.completed?
-      render json: {error: "Can't send a a reminder email for a request that is complete."}, status: :bad_request
+      render json: "Can't send a a reminder email for a request that is complete.", status: :bad_request
     elsif @substitution.sub.nil? && params[:to_id].present?
-      render json: {error: 'The sub was rejected, so the email to the previously assigned sub was not sent.'}, status: :bad_request
+      render json: 'The sub was rejected, so the email to the previously assigned sub was not sent.', status: :bad_request
     else
       if @substitution.sub.nil?
         ignores = @substitution.patrol.duty_day.ignores
@@ -160,11 +160,11 @@ class SubstitutionsController < ApplicationController
   private
 
   def sub_invalid
-    render json: {error: @substitution.errors.values.join(', ')}, status: :bad_request 
+    render json: @substitution.errors.values.join(', '), status: :bad_request 
   end
 
   def sub_not_destroyed
-    render json: {error: @substitution.errors.values.join(', ')}, status: :bad_request
+    render json: @substitution.errors.values.join(', '), status: :bad_request
   end
 
   def sub_not_found(exception)

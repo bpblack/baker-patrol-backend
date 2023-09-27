@@ -1,9 +1,9 @@
 json.requests @requests do |r|
-  json.(r, :id, :date, :accepted, :reason) #date was joined to record
+  json.(r, :id, :accepted, :reason) #date was joined to record
   json.patrol_id r.patrol_id
   json.duty_day do |json|
-    json.id r.duty_day_id
-    json.date r.date
+    json.id r.patrol.duty_day.id
+    json.date r.patrol.duty_day.date
   end  
   if r.sub
     json.sub_id r.sub.id
@@ -14,11 +14,15 @@ json.requests @requests do |r|
   end
 end
 json.substitutions @substitutions do |s|
-  json.(s, :id, :date, :accepted, :reason) #date was joined to record
+  json.(s, :id, :accepted, :reason) #date was joined to record
   json.patrol_id s.patrol_id
   json.duty_day do |json|
-    json.id s.duty_day_id
-    json.date s.date
+    json.id s.patrol.duty_day.id
+    json.date s.patrol.duty_day.date
+    json.team do |json|
+      json.id s.patrol.duty_day.team.id
+      json.name s.patrol.duty_day.team.name
+    end
   end
   json.sub_for do |json|
     if s.user.nil?

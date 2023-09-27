@@ -28,6 +28,6 @@ class PasswordResetsController < ApplicationController
 
   private
   def reset_invalid
-    render @user.errors.values.join(', '), status: :not_acceptable
+    render json: @user.errors.full_messages.join(', '), status: :not_acceptable
   end
 end

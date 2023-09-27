@@ -45,7 +45,8 @@ class Substitution < ApplicationRecord
       where_sql += ' AND substitutions.updated_at > :since'
       where_conds[:since] = since
     end
-    includes(incs).joins(:patrol).merge(Patrol.season_duty_days_ordered(season_id)).select('substitutions.*, duty_days.date, duty_days.id as duty_day_id').where(where_sql, where_conds)
+    #, duty_days.date, duty_days.id as duty_day_id
+    includes(incs).joins(:patrol).merge(Patrol.season_duty_days_ordered(season_id)).select('substitutions.*').where(where_sql, where_conds)
   }
 
   scope :duty_day_latest_subs, -> (duty_day_id, since: nil) {

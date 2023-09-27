@@ -39,6 +39,6 @@ class PatrolsController < ApplicationController
   private
 
   def patrol_invalid
-    render json: @substitution.errors.values.join(', '), status: :bad_request 
+    render json: @substitution.errors.full_messages.join(', '), status: :bad_request 
   end
 end

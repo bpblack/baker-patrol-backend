@@ -160,11 +160,11 @@ class SubstitutionsController < ApplicationController
   private
 
   def sub_invalid
-    render json: @substitution.errors.values.join(', '), status: :bad_request 
+    render json: @substitution.errors.full_messages.join(', '), status: :bad_request 
   end
 
   def sub_not_destroyed
-    render json: @substitution.errors.values.join(', '), status: :bad_request
+    render json: @substitution.errors.full_messages.join(', '), status: :bad_request
   end
 
   def sub_not_found(exception)
@@ -172,12 +172,12 @@ class SubstitutionsController < ApplicationController
     model = exception.message.match(/Couldn't find ([\w]+) with 'id'=([\d]+)/)[1] if model.nil?
     case(model)
     when 'User'
-      json = {error: 'User not found.'}
+      json = 'User not found.'
     when 'Patrol'
-      json = {error: 'Patrol not found.'}
+      json = 'Patrol not found.'
     when 'Substitution'
-      json = {error: 'Substituion request not found. The person requesting the sub may have deleted it.'}
+      json = 'Substituion request not found. The person requesting the sub may have deleted it.'
     end
-    render json: json, status: :bad_reqeust
+    render json: json, status: :bad_request
   end
 end

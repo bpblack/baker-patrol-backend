@@ -18,12 +18,16 @@ class Patrol < ApplicationRecord
     includes({duty_day: :team}, :patrol_responsibility).where(user_id: user_id, duty_days: {season_id: season_id}).merge(DutyDay.order(date: :asc)) 
   }
 
+  scope :duty_day, ->(user_id, season_id) {
+    joins(:duty_day).where(user_id: user_id, duty_days: {season_id: season_id}).merge(DutyDay.order(date: :asc))
+  }
+
   scope :duty_day_team_responsibility_subs, -> (patrol_id) {
     includes({duty_day: :team}, {substitutions: [:user, :sub]}, :patrol_responsibility).find(patrol_id)
   }
 
   scope :season_duty_days_ordered, -> (season_id) {
-    joins(:duty_day).includes(:patrol_responsibility).where(duty_days: {season_id: season_id}).order('duty_days.date ASC')
+    joins(:duty_day).where(duty_days: {season_id: season_id}).order('duty_days.date ASC')
   }
   
 

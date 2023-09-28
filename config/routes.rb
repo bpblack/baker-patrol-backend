@@ -35,6 +35,7 @@ Rails.application.routes.draw do
     resources :seasons, only: [] do
       resources :duty_days, only: [:index]
       resources :teams, path: 'roster', only: [:index]
+      resources :substitutions, path: 'open_requests', only: [:index]
     end
     resources :duty_days, only: [:show]                 #get duty day details
     resources :substitutions, only: [:destroy] do       #delete a sub request

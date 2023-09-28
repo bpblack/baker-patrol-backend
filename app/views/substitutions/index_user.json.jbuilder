@@ -1,27 +1,27 @@
 json.requests @requests do |r|
-  json.(r, :id, :accepted, :reason) #date was joined to record
-  json.patrol_id r.patrol_id
+  json.(r, :id, :accepted, :reason, :patrol_id) #date was joined to record
   json.duty_day do |json|
-    json.id r.patrol.duty_day.id
-    json.date r.patrol.duty_day.date
-  end  
-  if r.sub
-    json.sub_id r.sub.id
-    json.sub_name r.sub.name
-  else 
-    json.sub_id nil
-    json.sub_name nil
+    json.id r.duty_day_id
+    json.date r.duty_day_date
+  end 
+  json.sub do |json|
+    if r.sub
+      json.sub_id r.sub.id
+      json.sub_name r.sub.name
+    else 
+      json.sub_id nil
+      json.sub_name nil
+    end
   end
 end
 json.substitutions @substitutions do |s|
-  json.(s, :id, :accepted, :reason) #date was joined to record
-  json.patrol_id s.patrol_id
+  json.(s, :id, :accepted, :reason, :patrol_id, :responsibility) #date was joined to record
   json.duty_day do |json|
-    json.id s.patrol.duty_day.id
-    json.date s.patrol.duty_day.date
+    json.id s.duty_day_id
+    json.date s.duty_day_date
     json.team do |json|
-      json.id s.patrol.duty_day.team.id
-      json.name s.patrol.duty_day.team.name
+      json.id s.team_id
+      json.name s.team
     end
   end
   json.sub_for do |json|
@@ -32,10 +32,6 @@ json.substitutions @substitutions do |s|
       json.id s.user.id
       json.name s.user.name
     end
-  end
-  json.responsibility do |json|
-    json.name s.patrol.patrol_responsibility.name
-    json.version s.patrol.patrol_responsibility.version
-  end      
+  end    
 end
 json.timestamp Time.now.utc.iso8601

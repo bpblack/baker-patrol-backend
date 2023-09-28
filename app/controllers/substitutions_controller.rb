@@ -41,6 +41,14 @@ class SubstitutionsController < ApplicationController
       authorize Substitution.new({patrol: Patrol.find_by(duty_day_id: params[:duty_day_id])}) #current user must be admin or team leader
       @substitutions = Substitution.duty_day_latest_subs(params[:duty_day_id], since: params[:since])
       render :index_duty_day, formats: [:json], status: :ok
+    elsif params[:season_id].present? 
+      #all subs that are not assigned and are not on the current user's duty days
+      dds = Patrol.duty_day(current_user.id, params[:season_id]).pluck(:duty_day_id)
+      @cansub = Substitution.joins({patrol: [:patrol_responsibility, {duty_day: :team}]}).
+        select('substitutions.user_id, duty_days.id as duty_day_id, duty_days.date as date, patrol_responsibilities.name as responsibility, teams.name as team').
+        includes(:user).where(sub_id: nil, duty_days: {season: params[:season_id]}).where.not(patrols: {duty_day: dds}).
+        where('duty_days.date >= :today', {today: Time.zone.today})
+      render :index_season, formats: [:json], status: :ok
     else
       render nothing: true, status: :bad_request
     end

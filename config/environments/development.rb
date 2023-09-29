@@ -60,6 +60,20 @@ Rails.application.configure do
   #URL for use in mailers
   config.email_url = 'http://localhost:8000'
 
+  # config.active_job.queue_adapter = :sucker_punch
+  # config.action_mailer.raise_delivery_errors = true
+  # config.action_mailer.default_url_options = { host: 'mtbakervoly.herokuapp.com' }
+  # config.action_mailer.delivery_method = :smtp
+  # config.action_mailer.smtp_settings = {
+  #   address:              'smtp.gmail.com',
+  #   port:                 587,
+  #   domain:               'mtbakervoly.herokuapp.com',
+  #   user_name:            Rails.application.credentials.gmail.user,
+  #   password:             Rails.application.credentials.gmail.password,
+  #   authentication:       :plain,
+  #   enable_starttls_auto: true  
+  # }
+
   # google calendar configuration
   config.google = {
     redirect_uri: 'http://localhost:4200/Google',

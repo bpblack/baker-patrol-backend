@@ -94,7 +94,7 @@ Rails.application.configure do
 
   #google calendar configuration
   config.google = {
-    redirect_uri: 'https://volypatrol.mtbaker.us/Dash/Google',
+    redirect_uri: 'https://volypatrol.mtbaker.us/Google',
     revoke_uri: 'https://accounts.google.com/o/oauth2/revoke',
     service_application_name: 'Mt Baker Volunteer API',
     event_location: 'Mt. Baker Ski Area, Mount Baker Highway, Deming, WA',

@@ -62,7 +62,7 @@ Rails.application.configure do
 
   # google calendar configuration
   config.google = {
-    redirect_uri: 'http://localhost:5555/Dash/Google',
+    redirect_uri: 'http://localhost:4200/Google',
     revoke_uri: 'https://accounts.google.com/o/oauth2/revoke',
     service_application_name: 'Mt Baker Volunteer API',
     event_location: 'Mt. Baker Ski Area, Mount Baker Highway, Deming, WA',

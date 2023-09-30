@@ -46,9 +46,6 @@ gem 'pundit'
 #queue stuff
 gem 'sucker_punch', '~> 3.0'
 
-#encrypted cols
-gem 'attr_encrypted'
-
 #gcal sync
 gem 'google-apis-calendar_v3'
 

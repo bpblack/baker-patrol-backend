@@ -83,8 +83,8 @@ Rails.application.configure do
     address:              'smtp.gmail.com',
     port:                 587,
     domain:               'mtbakervoly.herokuapp.com',
-    user_name:            ENV['GMAIL_USER'],
-    password:             ENV['GMAIL_PASS'],
+    user_name:            Rails.application.credentials.gmail.user,
+    password:             Rails.application.credentials.gmail.password,
     authentication:       :plain,
     enable_starttls_auto: true  
   }
@@ -94,7 +94,7 @@ Rails.application.configure do
 
   #google calendar configuration
   config.google = {
-    redirect_uri: 'https://volypatrol.mtbaker.us/Google',
+    redirect_uri: 'https://volypatrol.mtbaker.us/GoogleCalendar',
     revoke_uri: 'https://accounts.google.com/o/oauth2/revoke',
     service_application_name: 'Mt Baker Volunteer API',
     event_location: 'Mt. Baker Ski Area, Mount Baker Highway, Deming, WA',

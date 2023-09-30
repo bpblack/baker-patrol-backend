@@ -16,7 +16,7 @@ module BakerGoogle
   
   # refresh token should not be nil if auth client is nil
   def google_service(refresh_token: nil, auth_client: nil)
-    raise Google::Apis::ClientError if refresh_token.nil? && auth_client.nil?
+    raise Google::Apis::ClientError.new('Missing refresh token.') if refresh_token.nil? && auth_client.nil?
     auth_client = google_auth(refresh_token: refresh_token, scope: Google::Apis::CalendarV3::AUTH_CALENDAR) if (auth_client.nil?)
     service = Google::Apis::CalendarV3::CalendarService.new
     service.client_options.application_name = Rails.application.config.google[:service_application_name]

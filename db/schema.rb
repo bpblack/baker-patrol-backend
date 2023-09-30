@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2016_04_15_213007) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_30_054102) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -18,10 +18,9 @@ ActiveRecord::Schema[7.0].define(version: 2016_04_15_213007) do
     t.string "owner_type", null: false
     t.integer "owner_id", null: false
     t.integer "patrol_id"
-    t.string "encrypted_uuid"
-    t.string "encrypted_uuid_iv"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.string "uuid"
     t.index ["owner_type", "owner_id"], name: "index_calendar_events_on_owner_type_and_owner_id"
     t.index ["patrol_id", "owner_id", "owner_type"], name: "patrol_unique_to_calendar", unique: true
     t.index ["patrol_id"], name: "index_calendar_events_on_patrol_id"
@@ -69,12 +68,10 @@ ActiveRecord::Schema[7.0].define(version: 2016_04_15_213007) do
   end
 
   create_table "google_calendars", id: :serial, force: :cascade do |t|
-    t.string "encrypted_calendar_id"
-    t.string "encrypted_calendar_id_iv"
-    t.string "encrypted_refresh_token"
-    t.string "encrypted_refresh_token_iv"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.string "calendar_id"
+    t.string "refresh_token"
   end
 
   create_table "patrol_responsibilities", id: :serial, force: :cascade do |t|

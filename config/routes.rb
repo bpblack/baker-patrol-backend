@@ -31,6 +31,11 @@ Rails.application.routes.draw do
           get 'available_patrollers'
         end
       end
+      resources :cpr_classes, only: [:index] do
+        member do
+          patch 'resize'
+        end
+      end
     end
     resources :seasons, only: [] do
       resources :duty_days, only: [:index]

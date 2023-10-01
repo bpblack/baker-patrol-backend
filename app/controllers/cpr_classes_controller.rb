@@ -1,0 +1,15 @@
+class CprClassesController < ApplicationController
+  before_action :authenticate_user
+
+  def index
+    @classes = CprClass.includes(:students).joins(:classroom).select("cpr_classes.*, classrooms.name as location").order(time: :asc).all
+    authorize @classes[0]
+    render formats: [:json], status: :ok
+  end
+
+  def resize
+    @class = CprClass.find(params[:id])
+    authorize @class
+    @class.update!(class_size: params[:size])
+  end
+end

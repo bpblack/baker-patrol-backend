@@ -36,6 +36,7 @@ Rails.application.routes.draw do
           patch 'resize'
         end
       end
+      resources :students, only: [:index]
     end
     resources :seasons, only: [] do
       resources :duty_days, only: [:index]

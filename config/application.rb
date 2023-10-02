@@ -52,7 +52,6 @@ module Bakerapi
       {role: :host, name: 'Host', resourced: true},
       {role: :candidate, name: 'Candidate', resourced: true}
     ] 
-
     config.team_extra_roles = [
       {role: :senior, name: 'Senior Alpine', resourced: false},
       {role: :rigger, name: 'Rigger', resourced: true},

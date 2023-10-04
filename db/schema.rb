@@ -50,8 +50,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_054102) do
     t.datetime "time", precision: nil
     t.integer "students_count"
     t.integer "class_size"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "classroom_id"
     t.index ["classroom_id"], name: "index_cpr_classes_on_classroom_id"
   end
@@ -138,8 +138,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_054102) do
     t.string "email"
     t.boolean "email_sent"
     t.integer "cpr_class_id"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["cpr_class_id"], name: "index_students_on_cpr_class_id"
     t.index ["first_name", "last_name"], name: "index_students_on_first_name_and_last_name", unique: true
   end

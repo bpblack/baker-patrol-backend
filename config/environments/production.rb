@@ -100,5 +100,4 @@ Rails.application.configure do
     event_location: 'Mt. Baker Ski Area, Mount Baker Highway, Deming, WA',
     secrets: File.open(File.join(Rails.root, 'config', 'google_client_secret.json'), 'r') { |file| JSON.load(file.read) }
   }
-  config
 end

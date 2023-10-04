@@ -7,13 +7,13 @@ class UsersController < ApplicationController
     authorize @user
     if (params[:first_name])
       @user.password_validation = false
-      update = {first_name: params[:first_name], last_name: params[:last_name]}
+      update = {first_name: params[:first_name].strip, last_name: params[:last_name].strip}
     elsif (params[:email])
       @user.password_validation = false
-      update = {email: params[:email]}
+      update = {email: params[:email].strip}
     elsif (params[:phone])
       @user.password_validation = false
-      update = {phone: params[:phone]}
+      update = {phone: params[:phone].strip}
     elsif (params[:password])
       if (!@user.authenticate(params[:password]))
         error = "Password is incorrect"

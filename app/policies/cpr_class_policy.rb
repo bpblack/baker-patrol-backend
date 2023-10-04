@@ -1,9 +1,9 @@
 class CprClassPolicy < ApplicationPolicy
   def index?
-    user.has_role?(:admin) || user.has_role?(:cprinstructor)
+    user.has_role?(:admin) || user.has_role?(:cprior) || user.has_role?(:cprinstructor)
   end
 
-  def resize?
-    user.has_role?(:admin) || user.has_role?(:cprinstructor)
+  def update?
+    user.has_role?(:admin) || user.has_role?(:cprior) || user.has_role?(:cprinstructor)
   end
 end

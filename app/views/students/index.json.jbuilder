@@ -1,4 +1,3 @@
 json.students @students.each do |s|
-  json.(s, :id, :email, :cpr_class_id)
-  json.name s.name
+  json.(s, :id, :first_name, :last_name, :email, :cpr_class_id)
 end

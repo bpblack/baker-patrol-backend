@@ -3,7 +3,6 @@ json.classes @classes.each do |c|
   json.time c.time_str
   json.location c.location
   json.students c.sorted_students do |s|
-    json.(s, :id, :email)
-    json.name s.name
+    json.(s, :id, :first_name, :last_name, :email, :cpr_class_id)
   end
 end

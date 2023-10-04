@@ -1,0 +1,1 @@
+json.(@student, :id, :first_name, :last_name, :email, :cpr_class_id)

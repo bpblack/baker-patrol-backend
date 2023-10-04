@@ -49,6 +49,9 @@ gem 'sucker_punch', '~> 3.0'
 #gcal sync
 gem 'google-apis-calendar_v3'
 
+#email validation
+gem 'email_validator'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'

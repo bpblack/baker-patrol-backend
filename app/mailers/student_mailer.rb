@@ -1,6 +1,6 @@
 class StudentMailer < ActionMailer::Base
   default from: 'volypatrol@mtbaker.us',
-          reply_to: ''#Rails.application.config.cpr_ior[:email]
+          reply_to: Rails.application.config.cpr_ior[:email]
 
   # don't pass model objects since we're queueing emails
   def reminder_email(name, tinyid, reminder, email)

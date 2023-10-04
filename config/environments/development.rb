@@ -83,5 +83,8 @@ Rails.application.configure do
     secrets: File.open(File.join(Rails.root, 'config', 'google_client_secret.json'), 'r') { |file| JSON.load(file.read) }
   }
 
-  config.cpr_ior = nil
+  config.cpr_ior = {
+    email: 'test@test.com',
+    name: 'Someone Incharge'
+  }
 end

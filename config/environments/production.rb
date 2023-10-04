@@ -102,7 +102,7 @@ Rails.application.configure do
   }
 
   config.cpr_ior = {
-    email: '',
-    name: ''
+    email: Rails.application.credentials.cpr_ior.email,
+    name: Rails.application.credentials.cpr_ior.name
   }
 end

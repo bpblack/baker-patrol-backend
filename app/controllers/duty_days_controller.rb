@@ -4,8 +4,8 @@ class DutyDaysController < ApplicationController
   def index
     authorize DutyDay.new(season_id: params[:season_id])
     if (params[:season_id])
-      @duty_days = DutyDay.includes(:team).where(season_id: params[:season_id]).order(:date)
-      render json: @duty_days.as_json(include: [{team: {only: [:id, :name]}}], only: [:id, :date]), status: :ok
+      @duty_days = DutyDay.joins(:team).select('duty_days.*, teams.name as team_name, teams.id as team_id').where(season_id: params[:season_id]).order(:date)
+      render formats: [:json], status: :ok
     else
       head :bad_request
     end

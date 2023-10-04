@@ -14,7 +14,8 @@ json.patrols @patrols do |p|
     json.pending_substitution nil
   end 
   json.duty_day do |json|
-    json.(p.duty_day, :id, :season_id, :date)
+    json.(p.duty_day, :id, :season_id)
+    json.date p.duty_day.date.strftime('%m/%d/%Y')
     json.team do |json|
       json.(p.duty_day.team, :id, :name)
     end

@@ -9,5 +9,8 @@ end
 json.patrollers @team.sorted_members do |rs|
   json.(rs.user, :id, :name) unless @leader && rs.id == @leader.id
 end
-json.duty_days @duty_days, :id, :date
+json.duty_days @duty_days do |d|
+  json.(d, :id)
+  json.date d.date.strftime('%m/%d/%Y')
+end
 

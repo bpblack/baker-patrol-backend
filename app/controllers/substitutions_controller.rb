@@ -44,7 +44,7 @@ class SubstitutionsController < ApplicationController
     elsif params[:season_id].present? 
       #all subs that are not assigned and are not on the current user's duty days
       dds = Patrol.duty_day(current_user.id, params[:season_id]).pluck(:duty_day_id)
-      @cansub = Substitution.joins({patrol: [{patrol_responsibility: :role}, {duty_day: :team}]}).
+      @cansub = current_user.reserve? ? [] : Substitution.joins({patrol: [{patrol_responsibility: :role}, {duty_day: :team}]}).
         select('substitutions.user_id, duty_days.id as duty_day_id, duty_days.date as date, duty_days.season_id as season_id, duty_days.season_id as season_id, patrol_responsibilities.name as responsibility, roles.name as role, teams.name as team').
         includes(:user).where(sub_id: nil, duty_days: {season: 4}).where.not(patrols: {duty_day: dds}).
         where('duty_days.date >= :today', {today: Time.zone.today})
@@ -79,7 +79,7 @@ class SubstitutionsController < ApplicationController
           json = {id: nil, sub_id: sub.id, sub_name: sub.name}
         else 
           status = :bad_request
-          json = {error: "#{sub.name} cannot be assigned #{patrol.patrol_responsibility.versioned_name}"}
+          json = "#{sub.name} cannot be assigned #{patrol.patrol_responsibility.versioned_name}"
         end
       else
         send_emails = true

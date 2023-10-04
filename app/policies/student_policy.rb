@@ -14,4 +14,8 @@ class StudentPolicy < ApplicationPolicy
   def update?
     user.has_role?(:admin) || user.has_role?(:cprior) || user.has_role?(:cprinstructor)
   end
+
+  def remove?
+    user.has_role?(:admin) || user.has_role?(:cprior) || user.has_role?(:cprinstructor)
+  end
 end

@@ -40,6 +40,12 @@ class StudentsController < ApplicationController
     head :no_content
   end
 
+  def remove
+    authorize Student
+    Student.where(id: params[:remove_list], cpr_class: nil).destroy_all
+    head :no_content
+  end
+
   def student_invalid(exception)
     render json: exception.message, status: :bad_request 
   end

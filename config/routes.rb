@@ -34,6 +34,7 @@ Rails.application.routes.draw do
       resources :cpr_classes, only: [:index, :update]
       resources :students, only: [:index, :create, :update]
       get 'students/remind', to: 'students#remind'
+      post 'students/remove', to: 'students#remove'
     end
     resources :seasons, only: [] do
       resources :duty_days, only: [:index]

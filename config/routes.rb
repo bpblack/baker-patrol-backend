@@ -31,7 +31,8 @@ Rails.application.routes.draw do
           get 'available_patrollers'
         end
       end
-      resources :cpr_classes, only: [:index, :update]
+      resources :classrooms, only: [:index, :create]
+      resources :cpr_classes, only: [:index, :create, :update]
       resources :students, only: [:index, :create, :update]
       get 'students/remind', to: 'students#remind'
       post 'students/remove', to: 'students#remove'

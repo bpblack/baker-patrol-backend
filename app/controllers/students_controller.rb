@@ -46,6 +46,8 @@ class StudentsController < ApplicationController
     head :no_content
   end
 
+  private
+
   def student_invalid(exception)
     render json: exception.message, status: :bad_request 
   end

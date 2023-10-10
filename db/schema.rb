@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_30_054102) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_09_233801) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,22 +38,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_054102) do
   end
 
   create_table "classrooms", id: :serial, force: :cascade do |t|
-    t.string "name"
-    t.string "address"
-    t.string "map_link"
+    t.string "name", null: false
+    t.string "address", null: false
+    t.string "map_link", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["address"], name: "index_classrooms_on_address", unique: true
     t.index ["name"], name: "index_classrooms_on_name", unique: true
   end
 
   create_table "cpr_classes", id: :serial, force: :cascade do |t|
-    t.datetime "time", precision: nil
+    t.datetime "time", precision: nil, null: false
     t.integer "students_count"
-    t.integer "class_size"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
+    t.integer "class_size", null: false
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "classroom_id"
     t.index ["classroom_id"], name: "index_cpr_classes_on_classroom_id"
+    t.index ["time", "classroom_id"], name: "index_cpr_classes_on_time_and_classroom_id", unique: true
   end
 
   create_table "duty_days", id: :serial, force: :cascade do |t|

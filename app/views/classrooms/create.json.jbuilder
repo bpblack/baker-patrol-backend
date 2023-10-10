@@ -1,0 +1,1 @@
+json.(@classroom, :id, :name, :address, :map_link)

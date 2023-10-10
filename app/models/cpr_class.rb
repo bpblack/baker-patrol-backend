@@ -1,7 +1,7 @@
 class CprClass < ActiveRecord::Base
   has_many :students, class_name: "Student"
   belongs_to :classroom, class_name: "Classroom"
-  validates :time, presence: true, uniqueness: true
+  validates :time, presence: true, uniqueness: { scope: :classroom_id }
   validates_numericality_of :class_size, greater_than_or_equal_to: :students_count
 
   def self.skip_time_zone_conversion_for_attributes

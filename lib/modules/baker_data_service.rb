@@ -1,4 +1,4 @@
-module DataService
+module BakerDataService
   module SecureRandom::RNG
     def self.rand(max)
       SecureRandom.random_number(max)
@@ -11,7 +11,7 @@ module DataService
 
   class SeasonData
     require 'csv'
-    def initialize(first, last)
+    def initialize(first, last, roster)
       @first = first
       @last = last
       @name = "Winter #{first.year}/#{last.year}"
@@ -73,7 +73,7 @@ module DataService
       #load the host patrols from csv
       @host_patrols = self.class.load_patrol_csv('config/subs/host_patrols.csv')
       #load the roster form json
-      @roster = ActiveSupport::JSON.decode(File.read('config/subs/roster.json'))
+      @roster = ActiveSupport::JSON.decode(roster)
       puts @roster
     end
 

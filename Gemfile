@@ -53,17 +53,15 @@ gem 'google-apis-calendar_v3'
 gem 'email_validator'
 
 group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug'
   gem 'pry'
-  gem 'pry-byebug'
   gem 'pry-rails'
   gem 'pry-doc'
+  gem 'debug'
 end
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  
 end
 
 group :development do

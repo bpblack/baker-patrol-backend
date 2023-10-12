@@ -1,4 +1,5 @@
 class SeasonsController < ApplicationController
+  include BakerDataService
   before_action :authenticate_user
 
   def latest 
@@ -8,7 +9,6 @@ class SeasonsController < ApplicationController
   end
 
   def create
-    include BakerDataService
     authorize Season
   end
 end

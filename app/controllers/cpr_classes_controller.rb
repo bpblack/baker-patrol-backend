@@ -1,6 +1,6 @@
 class CprClassesController < ApplicationController
   before_action :authenticate_user
-  rescue_from ActiveRecord::ActiveRecordError, with: :class_invalid
+  rescue_from ActiveRecord::ActiveRecordError, with: :class_invalid 
 
   def index
     authorize CprClass
@@ -16,7 +16,6 @@ class CprClassesController < ApplicationController
   def create
     authorize CprClass
     time = DateTime.strptime(DateTime.parse(params[:time]).in_time_zone.to_s[0..-9]+'00', '%Y-%m-%d %H:%M:%S') # Dirty strip off time zone since everything is pst
-    puts(time, params[:class_size], params[:classroom_id])
     @class = CprClass.create!(time: time, class_size: params[:class_size], students_count: 0, classroom_id: params[:classroom_id])
     render formats: [:json], status: :ok
   end

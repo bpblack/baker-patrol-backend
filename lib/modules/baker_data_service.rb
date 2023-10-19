@@ -9,12 +9,12 @@ module BakerDataService
     [*('a'..'z'),*('0'..'9'),*('A'..'Z')].shuffle(random: SecureRandom::RNG)[0,14].join
   end
 
+  class SeasonDataError < StandardError
+  end
+
   class SeasonData
     require 'csv'
-    def initialize(first, last, roster_upload, start_team)
-      @first = first
-      @last = last
-      @name = "Winter #{first.year}/#{last.year}"
+    def initialize()
       @role_resourced = {
         admin: false,
         onhill: true,
@@ -27,7 +27,6 @@ module BakerDataService
         avy2: false,
         mtr: false
       }
-
       begin
         base_role_ids = {
           admin: Role.find_by(name: :admin).id,
@@ -74,24 +73,12 @@ module BakerDataService
         @weekend_patrols.unshift(Array.new(@weekend_patrols[0].length, :lead))
         #load the host patrols from csv
         @host_patrols = self.class.load_patrol_csv('config/subs/host_patrols.csv')
-        #load the roster form json
-        roster_data = roster_upload.read
-        @roster = ActiveSupport::JSON.decode(roster_data)
-        Rails.logger.debug @roster['d']
-        a_weekend = [@teams[:midweek], @teams[:a], @teams[:b]]
-        c_weekend = [@teams[:midweek], @teams[:c], @teams[:d]]
-        @patrol_teams = start_team == :a ? a_weekend+c_weekend : c_weekend+a_weekend
+        #load the roster schema
+        @roster_schema = JSON.parse(File.read('config/subs/roster_schema.json'))
       rescue Exception => e
         Rails.logger.error "DATA SERVICE INITIALIZATION: #{e.message}"
         raise
       end
-    end
-
-    def email_new_user(user)
-      user.generate_token(:password_reset_token)
-      user.password_reset_sent_at = Time.now
-      user.save!(validate: false)
-      UserMailer.new_user(user).deliver_now
     end
     
     def create_patrols(user, team_duty_day_ids)
@@ -107,34 +94,44 @@ module BakerDataService
         Patrol.create!(user_id: uid, duty_day_id: user_duty_resp[0], patrol_responsibility_id: @responsibility_ids[user_duty_resp[1]])
       end
     end
+
+    def find_or_create_member(role, team_id, member)
+      created = false
+      user = nil
+      r = nil
+      unless member.nil?
+        user = User.find_by(email: member[:email])
+        if user.nil? 
+          #try first and last name, maybe they changed their email
+          user = User.find_by(first_name: member[:first_name], last_name: member[:last_name])
+        end
+        if user.nil?
+          user = User.create!(**(member))
+          r = RosterSpot.create!(user_id: user.id, team_id: team_id, season_id: @season_id)
+          created = true
+        else
+          r = user.season_roster_spot(@season_id)
+          if r.nil?
+            r = RosterSpot.create!(user_id: user.id, team_id: team_id, season_id: @season_id)
+          end
+        end
+        user.add_role(role, r) unless user.has_role?(role, r)
+        if created
+          # save a password reset token for initial account setup
+          # sending the emails will be a second action after the data has been veriftied
+          user.generate_token(:password_reset_token)
+          user.password_reset_sent_at = Time.now
+          user.save!(validate: false)
+        end
+      end
+      return user, r
+    end
     
     def seed_members(role, team_id, team_members, team_duty_day_ids)
       team_members.each do |member|
-        created = false
-        unless member[0].nil?
-          user = User.find_by(email: member[0][:email])
-          if user.nil? 
-            #try first and last name, maybe they changed their email
-            user = User.find_by(first_name: member[0][:first_name], last_name: member[0][:last_name])
-          end
-          if user.nil?
-            user = User.create!(**(member[0]))
-            r = RosterSpot.create!(user_id: user.id, team_id: team_id, season_id: @season_id)
-            created = true
-          else
-            r = user.season_roster_spot(@season_id)
-            if r.nil?
-              r = RosterSpot.create!(user_id: user.id, team_id: team_id, season_id: @season_id)
-            end
-          end
-          add_extra_roles(user, r, member[2])
-          member[0] = user
-          member[0].add_role(role, r) unless member[0].has_role?(role, r)
-        end
+        member[0], r = find_or_create_member(role, team_id, member[0])
+        add_extra_roles(member[0], r, member[2]) unless member[0].nil?
         create_patrols(member, team_duty_day_ids) unless member[1].nil?
-        if created
-         email_new_user(member[0])
-        end
       end
     end
     
@@ -146,9 +143,7 @@ module BakerDataService
         user = User.find_by(first_name: leader[0][:first_name], last_name: leader[0][:last_name])
       end
       if user.nil?
-        user = User.create!(**(leader[0]))
-        r = RosterSpot.create!(user_id: user.id, team_id: team_id, season_id: @season_id)
-        created = true
+        #TODO throw not found exception for leader
       else
         r = user.season_roster_spot(@season_id)
         if r.nil?
@@ -160,9 +155,6 @@ module BakerDataService
       leader[0].add_role(role, r)
       leader[0].add_role(:leader, r)
       create_patrols(leader, team_duty_day_ids)
-      if created
-       email_new_user(leader[0])
-      end
     end
     
     def seed_weekend(role, team_id, team_members, team_duty_day_ids)
@@ -193,7 +185,7 @@ module BakerDataService
     
     def mapRoster(team_roster, patrol_table)
       team_roster.each_with_index.map do |m, i|
-        if (m.nil?)
+        if (m.length == 0)
           [nil, patrol_table[i]]
         else  
           [{first_name: m[0], last_name: m[1], email: m[2], phone: m[3], password: BakerDataService::random_pass}, patrol_table[i], (m[4].nil? ? [] : m[4].map{ |e| e.to_sym})]
@@ -201,19 +193,36 @@ module BakerDataService
       end
     end 
 
-    def seed()
+    def seed(first, last, roster_upload, start_team)
+      name = "Winter #{first.year}/#{last.year}" 
+      #load the roster form json and validate it
+      roster_errors = []
+      roster_data = roster_upload.read
+      @roster = JSON.parse(roster_data)
+      JSONSchemer.schema(@roster_schema).validate(@roster).each { |ve| roster_errors << ve["error"] }
+      raise BakerDataService::SeasonDataError, "Roster validation errors: #{roster_errors.join(', ')}" if (roster_errors.length > 0)
+      #generate the duty day dates and validate
+      raise BakerDataService::SeasonDataError, "Start date must be a Friday in November." unless (first.friday? && first.mon == 11)
+      raise BakerDataService::SeasonDataError, "End date must be a Sunday in April." unless (last.sunday? && last.mon == 4)
+      duty_days = (first..last).filter_map { |x| x if (x.friday? || x.saturday? || x.sunday?) }
+      raise BakerDataService::SeasonDataError, "There must be #{Rails.applicationl.config.num_weekends} weekends in the season." if duty_days.length != Rails.application.config.num_weekends * 3
+      a_weekend = [@teams[:midweek], @teams[:a], @teams[:b]]
+      c_weekend = [@teams[:midweek], @teams[:c], @teams[:d]]
+      patrol_teams = start_team == :a ? a_weekend+c_weekend : c_weekend+a_weekend
       ActiveRecord::Base.transaction do
         # create the season
-        Rails.logger.info "Creating #{@name} season..."
-        @season_id = Season.create!(name: @name, start: @first, end: @last).id
+        Rails.logger.info "Creating #{name} season..."
+        @season_id = Season.create!(name: name, start: first, end: last).id
         # create the duty days
         Rails.logger.info "Creating duty days..."
-        (@first..@last).filter_map { |x| x if (x.friday? || x.saturday? || x.sunday?) }.zip(@patrol_teams.cycle).each do |dd|
+        duty_days.zip(patrol_teams.cycle).each do |dd|
           DutyDay.create!(season_id: @season_id, date: dd[0], team_id: dd[1])
         end
         #seed trainers
         Rails.logger.info "Seeding Trainer team..."
-        seed_members(:onhill, @teams[:trainer], mapRoster(@roster['trainer'], []), [])
+        trainers = mapRoster(@roster['trainer'], [])
+        trainers[0][-1].unshift("director") #first trainer team member is director 
+        seed_members(:onhill, @teams[:trainer], trainers, [])
         #seed midweek
         Rails.logger.info "Seeding Midweek team..."
         midweek = @teams[:midweek]
@@ -243,7 +252,39 @@ module BakerDataService
         d_duty_day_ids = DutyDay.where(season_id: @season_id, team_id: d).order(date: :asc).pluck(:id)
         seed_weekend(:onhill, d, mapRoster(@roster['d'], @weekend_patrols), d_duty_day_ids)
         seed_members(:host, d, mapRoster(@roster['d_hosts'], @host_patrols), d_duty_day_ids)
-        Rails.logger.info "#{@name} seeding completed!"
+        Rails.logger.info "#{name} seeding completed!"
+      rescue ActiveRecord::RecordInvalid => e
+        Rails.logger.error "FAILED to seed: #{e.message}"
+        raise
+      end
+    end
+
+    # user is a hash. role, team, and row is a sym
+    def addUserToTeam(new_user, role, team, row)
+      # get the season, team duty days, and correct patrol table row
+      ActiveRecord::Base.transaction do
+        cur = Season.last
+        team_duty_days = DutyDay.where(season_id: cur.id, team_id: @teams[team])
+        if (role == :host)
+          table = @host_patrols
+        elsif (team == :midweek)
+          table = @midweek_patrols
+        else
+          table = @weekend_patrols
+        end 
+        idx = table.index {|r| r[0] == start}
+        row = table[idx]
+        created = false
+        #get or create the user
+        user = find_or_create_member(role, @teams[team], new_user)
+        #find the specified patrol for each duty day that is in the future and assign
+        t = Date.today
+        team_duty_days.each_with_index do |dd, ddidx|
+          if (t > dd.date)
+            p = Patrol.find_by(duty_day_id: dd.id, patrol_responsibility_id: @responsibility_ids[row[ddidx]], user: nil)
+            p.update!({user_id: user.id}) unless (p.nil?) 
+          end
+        end
       rescue ActiveRecord::RecordInvalid => e
         Rails.logger.error "FAILED to seed: #{e.message}"
         raise

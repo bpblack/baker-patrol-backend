@@ -59,5 +59,6 @@ module Bakerapi
       {role: :avy2, name: 'Avy 2', resourced: false},
       {role: :mtr, name: 'MTR', resourced: false}
     ]
+    config.num_weekends = 24
   end
 end

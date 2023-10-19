@@ -52,6 +52,9 @@ gem 'google-apis-calendar_v3'
 #email validation
 gem 'email_validator'
 
+#json validations
+gem "json_schemer"
+
 group :development, :test do
   gem 'pry'
   gem 'pry-rails'

@@ -1,5 +1,4 @@
 class SeasonsController < ApplicationController
-  require 'JSON'
   require 'CSV'
   include BakerDataService
   before_action :authenticate_user
@@ -10,6 +9,7 @@ class SeasonsController < ApplicationController
   rescue_from CSV::MalformedCSVError, with: :season_invalid
   rescue_from CSV::Parser::InvalidEncoding, with: :season_invalid
   rescue_from CSV::Parser::UnexpectedError, with: :season_invalid
+  rescue_from BakerDataService::SeasonDataError, with: :season_invalid 
 
   def latest 
     authorize Season
@@ -21,8 +21,8 @@ class SeasonsController < ApplicationController
     authorize Season
     sd = DateTime.parse(params[:start]).to_date
     ed = DateTime.parse(params[:end]).to_date
-    season = BakerDataService::SeasonData.new(sd, ed, params[:roster], params[:team].to_sym)
-    season.seed()
+    season_service = BakerDataService::SeasonData.new()
+    season_service.seed(sd, ed, params[:roster], params[:team].to_sym)
     @latest = Season.last
     render :latest, formats: [:json], status: :ok
   end

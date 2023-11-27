@@ -38,6 +38,7 @@ Rails.application.routes.draw do
       get 'students/remind', to: 'students#remind'
       post 'students/remove', to: 'students#remove'
       get 'seasons/latest', to: 'seasons#latest'
+      get 'users/email', to: 'users#email_new'
     end
     resources :seasons, only: [] do
       resources :duty_days, only: [:index]

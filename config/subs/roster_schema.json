@@ -31,60 +31,60 @@
       "items": {
         "$ref": "#/$defs/patroller"
       },
-      "minItems": 11,
-      "maxItems": 11
+      "minItems": 12,
+      "maxItems": 12
     },
     "a_hosts": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/patroller"
       },
-      "maxItems": 4
+      "maxItems": 5
     },
     "b": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/patroller"
       },
-      "minItems": 11,
-      "maxItems": 11
+      "minItems": 12,
+      "maxItems": 12
     },
     "b_hosts": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/patroller"
       },
-      "maxItems": 4
+      "maxItems": 5
     },
     "c": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/patroller"
       },
-      "minItems": 11,
-      "maxItems": 11
+      "minItems": 12,
+      "maxItems": 12
     },
     "c_hosts": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/patroller"
       },
-      "maxItems": 4
+      "maxItems": 5
     },
     "d": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/patroller"
       },
-      "minItems": 11,
-      "maxItems": 11
+      "minItems": 12,
+      "maxItems": 12
     },
     "d_hosts": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/patroller"
       },
-      "maxItems": 4
+      "maxItems": 5
     }
   },
   "$defs": {
@@ -100,7 +100,7 @@
         "type": "array", 
         "items": {
           "type": "string",
-          "enum": ["avy1", "avy2", "mtr", "rigger", "senior"]
+          "enum": ["avy1", "avy2", "mtr", "rigger", "senior", "oec", "tbgn"]
         }
       }
     }

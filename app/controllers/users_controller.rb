@@ -54,6 +54,20 @@ class UsersController < ApplicationController
     render json: json, status: :ok
   end
 
+  def email_new
+    authorize User
+    begin
+      new_users = User.where(activated: false).where.not(password_reset_token: nil)
+      new_users.each do |nu|
+        nu.update_attribute(:password_reset_sent_at, Time.zone.now)
+        UserMailer.new_user(nu).deliver_later 
+      end
+      render json: {email_count: new_users.length}, status: :ok
+    rescue Exception => e
+      render json: e.message, status: :not_acceptable
+    end
+  end
+
   private
 
   def user_invalid

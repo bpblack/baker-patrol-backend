@@ -25,7 +25,10 @@ module BakerDataService
         senior: false,
         avy1: false,
         avy2: false,
-        mtr: false
+        mtr: false,
+        #specific to hosts
+        oec: true,
+        tbgn: true
       }
       begin
         base_role_ids = {
@@ -35,6 +38,7 @@ module BakerDataService
         }
         @responsibility_ids = {
           lead: self.class.find_or_create_responsibility(name: 'Team leader', version: 15, role_id: base_role_ids[:onhill]),
+          rover: self.class.find_or_create_responsibility(name: 'Rover', version: 15, role_id: base_role_ids[:onhill]),
           p1: self.class.find_or_create_responsibility(name: 'P1', version: 15, role_id: base_role_ids[:onhill]),
           p2: self.class.find_or_create_responsibility(name: 'P2', version: 15, role_id: base_role_ids[:onhill]),
           p3: self.class.find_or_create_responsibility(name: 'P3', version: 15, role_id: base_role_ids[:onhill]),
@@ -53,6 +57,7 @@ module BakerDataService
           h2: self.class.find_or_create_responsibility(name: 'Host 2', version: 1, role_id: base_role_ids[:host]),
           h3: self.class.find_or_create_responsibility(name: 'Host 3', version: 1, role_id: base_role_ids[:host]),
           h4: self.class.find_or_create_responsibility(name: 'Host 4', version: 1, role_id: base_role_ids[:host]),
+          h5: self.class.find_or_create_responsibility(name: 'Host 5', version: 1, role_id: base_role_ids[:host])
           #base: find_or_create_responsibility(name: 'Base', version: 15, role_id: base_role_ids[:onhill])
         }
         @teams = {
@@ -70,7 +75,9 @@ module BakerDataService
         @midweek_patrols.unshift(Array.new(@midweek_patrols[0].length * 2, :lead)) #double the leader duties 
         #load the weekend patrols from csv
         @weekend_patrols = self.class.load_patrol_csv('config/subs/weekend_patrols.csv')
-        @weekend_patrols.unshift(Array.new(@weekend_patrols[0].length, :lead))
+        wpl = @weekend_patrols[0].length
+        @weekend_patrols.unshift(Array.new(wpl, :rover))
+        @weekend_patrols.unshift(Array.new(wpl, :lead))
         #load the host patrols from csv
         @host_patrols = self.class.load_patrol_csv('config/subs/host_patrols.csv')
         #load the roster schema
@@ -161,16 +168,19 @@ module BakerDataService
       seed_leader(role, team_id, team_members[0], team_duty_day_ids)
       seed_members(role, team_id, team_members[1..-1], team_duty_day_ids)
     end
-    
-    def seed_midweek(role, team_id, team_members, team_duty_day_ids)
+
+    def seed_members_midweek(role, team_id, team_members, team_duty_day_ids, slice_size)
       chunk = 0 #TODO ONLY FOR TESTING, should be 0
-      seed_leader(role, team_id, team_members[0], team_duty_day_ids)
-      team_members[1..-1].each_slice(4) do |midweek_team|
-        puts "Seeding a midweek team"
+      team_members.each_slice(slice_size) do |midweek_team|
         midweek_team_duty_day_ids = chunk.step(team_duty_day_ids.size-1, 2).map { |i| team_duty_day_ids[i] }
         seed_members(role, team_id, midweek_team, midweek_team_duty_day_ids)
         chunk += 1
       end
+    end
+    
+    def seed_midweek(role, team_id, team_members, team_duty_day_ids, slice_size)
+      seed_leader(role, team_id, team_members[0], team_duty_day_ids)
+      seed_members_midweek(role, team_id, team_members[1..-1], team_duty_day_ids, slice_size)
     end
     
     def add_extra_roles(user, roster_spot, roles) 
@@ -227,7 +237,10 @@ module BakerDataService
         Rails.logger.info "Seeding Midweek team..."
         midweek = @teams[:midweek]
         midweek_duty_day_ids = DutyDay.where(season_id: @season_id, team_id: midweek).order(date: :asc).pluck(:id)
-        seed_midweek(:onhill, midweek, mapRoster(@roster['midweek'], @midweek_patrols), midweek_duty_day_ids)
+        seed_midweek(:onhill, midweek, mapRoster(@roster['midweek'], @midweek_patrols), midweek_duty_day_ids, 4)
+        mwhp = @host_patrols[0..1] #take the first 2 rows
+        mwhp += mwhp #double it
+        seed_members_midweek(:host, midweek, mapRoster(@roster['midweek_hosts'], mwhp), midweek_duty_day_ids, 2)
         #seed a
         Rails.logger.info "Seeding A team..."
         a = @teams[:a]
@@ -252,6 +265,11 @@ module BakerDataService
         d_duty_day_ids = DutyDay.where(season_id: @season_id, team_id: d).order(date: :asc).pluck(:id)
         seed_weekend(:onhill, d, mapRoster(@roster['d'], @weekend_patrols), d_duty_day_ids)
         seed_members(:host, d, mapRoster(@roster['d_hosts'], @host_patrols), d_duty_day_ids)
+        # seed extra hosts
+        if (@roster['hosts'])
+          Rails.logger.info "Seeding extra hosts..."
+          seed_members(:host, @teams[:host], mapRoster(@roster['hosts'], []), [])
+        end
         Rails.logger.info "#{name} seeding completed!"
       rescue ActiveRecord::RecordInvalid => e
         Rails.logger.error "FAILED to seed: #{e.message}"

@@ -1,5 +1,5 @@
 class SeasonsController < ApplicationController
-  require 'CSV'
+  require 'csv'
   include BakerDataService
   before_action :authenticate_user
   rescue_from ActiveRecord::ActiveRecordError, with: :season_invalid

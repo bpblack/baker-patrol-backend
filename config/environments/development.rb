@@ -39,7 +39,7 @@ Rails.application.configure do
   config.active_support.deprecation = :log
 
   #logging 
-  config.logger = Logger.new(STDOUT)
+  config.logger = Logger.new('log/development.log')
   config.log_formatter = ::Logger::Formatter.new
   config.log_level = :debug
 

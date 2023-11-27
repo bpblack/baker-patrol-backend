@@ -1,0 +1,1 @@
+json.(@latest, :id, :name, :start, :end)

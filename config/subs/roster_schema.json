@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://volypatrol.mtbaker.us/schemas/roster",
+  "type": "object",
+  "required": ["trainer", "midweek", "a", "b", "c", "d"],
+  "properties": {
+    "trainer": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "minItems": 1
+    }, 
+    "midweek": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "minItems": 9,
+      "maxItems": 9
+    },
+    "midweek_hosts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "maxItems": 4
+    },
+    "a": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "minItems": 12,
+      "maxItems": 12
+    },
+    "a_hosts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "maxItems": 5
+    },
+    "b": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "minItems": 12,
+      "maxItems": 12
+    },
+    "b_hosts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "maxItems": 5
+    },
+    "c": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "minItems": 12,
+      "maxItems": 12
+    },
+    "c_hosts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "maxItems": 5
+    },
+    "d": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "minItems": 12,
+      "maxItems": 12
+    },
+    "d_hosts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patroller"
+      },
+      "maxItems": 5
+    }
+  },
+  "$defs": {
+    "patroller": {
+      "type": "array",
+      "prefixItems": [
+        {"type": "string"},
+        {"type": "string"},
+        {"type": "string"},
+        {"type": "string"}
+      ],
+      "items": {
+        "type": "array", 
+        "items": {
+          "type": "string",
+          "enum": ["avy1", "avy2", "mtr", "rigger", "senior", "oec", "tbgn"]
+        }
+      }
+    }
+  }
+}

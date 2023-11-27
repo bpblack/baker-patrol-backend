@@ -46,7 +46,7 @@ class SubstitutionsController < ApplicationController
       dds = Patrol.duty_day(current_user.id, params[:season_id]).pluck(:duty_day_id)
       @cansub = current_user.reserve? ? [] : Substitution.joins({patrol: [{patrol_responsibility: :role}, {duty_day: :team}]}).
         select('substitutions.user_id, duty_days.id as duty_day_id, duty_days.date as date, duty_days.season_id as season_id, duty_days.season_id as season_id, patrol_responsibilities.name as responsibility, roles.name as role, teams.name as team').
-        includes(:user).where(sub_id: nil, duty_days: {season: 4}).where.not(patrols: {duty_day: dds}).
+        includes(:user).where(sub_id: nil, duty_days: {season: params[:season_id]}).where.not(patrols: {duty_day: dds}).
         where('duty_days.date >= :today', {today: Time.zone.today})
       if (@cansub.length > 0)
         # filter based on the current user's season role

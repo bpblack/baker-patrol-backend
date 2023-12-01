@@ -33,7 +33,6 @@ class ChangeGoogleCalendarJob < ApplicationJob
             unless ps[:uuid].nil?
               s.move_event(old_calendar_id, ps[:uuid], calendar_id) do |res, err| 
                 if err
-                  Rails.logger.info "Error moving event: #{old_calendar_id}, #{ps[:uuid]}, #{calendar_id}"
                   should_retry |= google_batch_error(err)
                 end
               end

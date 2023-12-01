@@ -8,6 +8,7 @@ class ChangeGoogleCalendarJob < ApplicationJob
     if user.nil?
       return;
     end
+    Rails.logger.info "Seeding calendar events"
     gc = user.google_calendar
     future_patrol_ids = user.patrols.includes(:duty_day).where("duty_days.date >= :today", {today: Date.today}).pluck(:id)
 
@@ -26,6 +27,7 @@ class ChangeGoogleCalendarJob < ApplicationJob
 
       # batch move already existing events
       if old_calendar_id && patrol_summaries[:move].length > 0
+        Rails.logger.info "Batching google calendar move events"
         service.batch do |s|
           patrol_summaries[:move].each do |ps|
             unless ps[:uuid].nil?
@@ -41,6 +43,7 @@ class ChangeGoogleCalendarJob < ApplicationJob
 
       # batch create new events
       if patrol_summaries[:create].length > 0
+        Rails.logger.info "Batching google calendar create events"
         new_events = []
         service.batch do |s|
           patrol_summaries[:create].each do |ps|
@@ -57,6 +60,7 @@ class ChangeGoogleCalendarJob < ApplicationJob
             end
           end
         end
+        Rails.logger.info "Creating google calendar event"
         CalendarEvent.create!(new_events) if new_events.length > 0
       end
 

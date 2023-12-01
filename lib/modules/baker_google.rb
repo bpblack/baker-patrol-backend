@@ -47,10 +47,10 @@ module BakerGoogle
     b = begin
       throw e
     rescue Google::Apis::ServerError => e
-      logger.error e.inspect
+      Rails.logger.error e.inspect
       true
     rescue Exception => e
-      logger.error e.inspect
+      Rails.logger.error e.inspect
       false
     end
     return b

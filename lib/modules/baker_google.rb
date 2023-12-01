@@ -30,7 +30,7 @@ module BakerGoogle
       use_default: false, 
       overrides: [{minutes: 1440, reminder_method: "email"}]
     )
-    return Google::Apis::CalendarV3::Event.new({
+    return Google::Apis::CalendarV3::Event.new(
       summary: 'Mt. Baker Duty Day',
       location: Rails.application.config.google[:event_location],
       description: "#{team} duty day with responsibility #{responsibility}",
@@ -43,7 +43,7 @@ module BakerGoogle
         time_zone: zone_name
       },
       reminders: reminders
-    })
+    )
   end
 
   def google_batch_error(e)

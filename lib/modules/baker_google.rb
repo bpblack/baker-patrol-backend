@@ -26,7 +26,10 @@ module BakerGoogle
 
   def google_event(date:, team:, responsibility:)
     zone_name = ActiveSupport::TimeZone::MAPPING[Time.zone.name]
-    reminders = Google::Apis::CalendarV3::Event::Reminders.new({use_default:false, overrides: [{minutes: 1440, reminder_method: "email"}]})
+    reminders = Google::Apis::CalendarV3::Event::Reminders.new({
+      use_default: false, 
+      overrides: [{minutes: 1440, reminder_method: "email"}]
+    })
     return Google::Apis::CalendarV3::Event.new({
       summary: 'Mt. Baker Duty Day',
       location: Rails.application.config.google[:event_location],

@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "cpr_years/index"
+  get "cpr_years/create"
   scope 'api', constraints: { format: 'json' } do
     post 'user_token', to: 'user_token#create'
     resources :password_resets
@@ -32,6 +34,8 @@ Rails.application.routes.draw do
         end
       end
       resources :classrooms, only: [:index, :create]
+      resources :cpr_years, only: [:index, :create]
+      get 'cpr_years/latest', to: 'cpr_years#latest'
       resources :cpr_classes, only: [:index, :create, :update]
       resources :students, only: [:index, :create, :update]
       resources :seasons, only: [:create]

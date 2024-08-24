@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_24_195021) do
+ActiveRecord::Schema[7.2].define(version: 2024_08_24_230214) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -54,7 +54,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_24_195021) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.integer "classroom_id"
+    t.bigint "cpr_year_id", null: false
     t.index ["classroom_id"], name: "index_cpr_classes_on_classroom_id"
+    t.index ["cpr_year_id"], name: "index_cpr_classes_on_cpr_year_id"
     t.index ["time", "classroom_id"], name: "index_cpr_classes_on_time_and_classroom_id", unique: true
   end
 
@@ -226,6 +228,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_24_195021) do
   add_foreign_key "calendar_events", "patrols"
   add_foreign_key "calendars", "users"
   add_foreign_key "cpr_classes", "classrooms"
+  add_foreign_key "cpr_classes", "cpr_years"
   add_foreign_key "cpr_students", "cpr_classes"
   add_foreign_key "cpr_students", "cpr_years"
   add_foreign_key "duty_days", "seasons"

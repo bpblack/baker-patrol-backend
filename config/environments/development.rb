@@ -45,7 +45,6 @@ Rails.application.configure do
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = false
-  config.active_record.legacy_connection_handling = false
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true

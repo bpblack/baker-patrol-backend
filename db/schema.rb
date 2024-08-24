@@ -70,7 +70,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_24_195021) do
   end
 
   create_table "cpr_students", force: :cascade do |t|
-    t.bigint "cpr_class_id", null: false
+    t.bigint "cpr_class_id"
     t.boolean "email_sent"
     t.string "email_token"
     t.bigint "cpr_year_id", null: false

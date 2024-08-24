@@ -1,0 +1,2 @@
+class CprYear < ApplicationRecord
+end

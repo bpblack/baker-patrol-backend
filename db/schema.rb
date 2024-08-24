@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_09_233801) do
+ActiveRecord::Schema[7.2].define(version: 2024_08_24_195021) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -56,6 +56,39 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_09_233801) do
     t.integer "classroom_id"
     t.index ["classroom_id"], name: "index_cpr_classes_on_classroom_id"
     t.index ["time", "classroom_id"], name: "index_cpr_classes_on_time_and_classroom_id", unique: true
+  end
+
+  create_table "cpr_external_students", force: :cascade do |t|
+    t.string "first_name", null: false
+    t.string "last_name", null: false
+    t.string "email", null: false
+    t.string "phone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_cpr_external_students_on_email", unique: true
+    t.index ["first_name", "last_name"], name: "index_cpr_external_students_on_first_name_and_last_name", unique: true
+  end
+
+  create_table "cpr_students", force: :cascade do |t|
+    t.bigint "cpr_class_id", null: false
+    t.boolean "email_sent"
+    t.string "email_token"
+    t.bigint "cpr_year_id", null: false
+    t.string "student_type", null: false
+    t.bigint "student_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cpr_class_id"], name: "index_cpr_students_on_cpr_class_id"
+    t.index ["cpr_year_id"], name: "index_cpr_students_on_cpr_year_id"
+    t.index ["student_type", "student_id", "cpr_year_id"], name: "idx_on_student_type_student_id_cpr_year_id_731fdad6dc", unique: true
+    t.index ["student_type", "student_id"], name: "index_cpr_students_on_student"
+  end
+
+  create_table "cpr_years", force: :cascade do |t|
+    t.date "year", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["year"], name: "index_cpr_years_on_year", unique: true
   end
 
   create_table "duty_days", id: :serial, force: :cascade do |t|
@@ -140,8 +173,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_09_233801) do
     t.string "email"
     t.boolean "email_sent"
     t.integer "cpr_class_id"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["cpr_class_id"], name: "index_students_on_cpr_class_id"
     t.index ["first_name", "last_name"], name: "index_students_on_first_name_and_last_name", unique: true
   end
@@ -193,6 +226,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_09_233801) do
   add_foreign_key "calendar_events", "patrols"
   add_foreign_key "calendars", "users"
   add_foreign_key "cpr_classes", "classrooms"
+  add_foreign_key "cpr_students", "cpr_classes"
+  add_foreign_key "cpr_students", "cpr_years"
   add_foreign_key "duty_days", "seasons"
   add_foreign_key "duty_days", "teams"
   add_foreign_key "patrol_responsibilities", "roles"

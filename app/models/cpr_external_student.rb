@@ -1,0 +1,2 @@
+class CprExternalStudent < ApplicationRecord
+end

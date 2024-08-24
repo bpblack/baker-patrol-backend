@@ -1,6 +1,7 @@
 class UserTokenController < ApplicationController
   def create
-    user = User.find_by(email: params[:auth][:email])
+    # use postgres ILIKE query for email lookup
+    user = User.where('email ILIKE ?', params[:auth][:email])[0]
 
     # you can use bcrypt to password authentication
     if user && user.authenticate(params[:auth][:password])

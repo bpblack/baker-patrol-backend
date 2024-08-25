@@ -104,4 +104,5 @@ Rails.application.configure do
     email: Rails.application.credentials.cpr_ior.email,
     name: Rails.application.credentials.cpr_ior.name
   }
+  config.cpr_url = 'https://volypatrol.mtbaker.us/cpr/signup/'
 end

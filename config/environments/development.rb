@@ -86,4 +86,5 @@ Rails.application.configure do
     email: 'test@test.com',
     name: 'Someone Incharge'
   }
+  config.cpr_url = 'http://localhost:4200/cpr/signup/'
 end

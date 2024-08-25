@@ -12,9 +12,12 @@ class StudentsController < ApplicationController
     authorize Student
     last = CprYear.last
     if (last && !last.expired())
-      external = CprExternalStudent.find_by(email: params[:email].strip)
+      external = User.find_by(email: params[:email].strip)
+      unless external 
+        external = CprExternalStudent.find_by(email: params[:email].strip)
+      end
       unless external
-        external = CprExternalStudent.find_by(last_name: params[:last_name].strip, first_name: params[:first_name].strip)
+        external = User.find_by(last_name: params[:last_name].strip, first_name: params[:first_name].strip)
       end
       unless external
         external = CprExternalStudent.create!(first_name: params[:first_name].strip, last_name: params[:last_name].strip, email: params[:email].strip)

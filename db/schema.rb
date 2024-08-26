@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_25_021255) do
+ActiveRecord::Schema[7.2].define(version: 2024_08_26_033538) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -83,6 +83,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_25_021255) do
     t.boolean "has_cpr_cert"
     t.index ["cpr_class_id"], name: "index_cpr_students_on_cpr_class_id"
     t.index ["cpr_year_id"], name: "index_cpr_students_on_cpr_year_id"
+    t.index ["email_token"], name: "index_cpr_students_on_email_token"
     t.index ["student_type", "student_id", "cpr_year_id"], name: "idx_on_student_type_student_id_cpr_year_id_731fdad6dc", unique: true
     t.index ["student_type", "student_id"], name: "index_cpr_students_on_student"
   end

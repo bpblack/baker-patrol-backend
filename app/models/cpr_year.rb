@@ -1,5 +1,5 @@
 class CprYear < ApplicationRecord
-    def expired
+    def expired?
         Date.today.year > year.year
     end
 end

@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get "cpr_years/index"
-  get "cpr_years/create"
   scope 'api', constraints: { format: 'json' } do
     post 'user_token', to: 'user_token#create'
     resources :password_resets
@@ -66,6 +64,7 @@ Rails.application.routes.draw do
         post 'select'
       end
     end
+    resources :signup, only: [:show, :update]
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 

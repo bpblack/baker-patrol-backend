@@ -19,7 +19,7 @@ class CprClassesController < ApplicationController
   def create
     authorize CprClass
     latest = CprYear.last
-    if !latest || latest.expired
+    if !latest || latest.expired?
       render json: {message: "Please create a current CPR year before creating classes."}, status: :bad_request
     else
       @class = CprClass.create!(time: get_time(params[:time]), class_size: params[:class_size], students_count: 0, classroom_id: params[:classroom_id], cpr_year_id: latest.id)
@@ -30,7 +30,7 @@ class CprClassesController < ApplicationController
   def update
     authorize CprClass
     latest = CprYear.last
-    if !latest || latest.expired
+    if !latest || latest.expired?
       render json: {message: "Please create a current CPR year before updating classes."}, status: :bad_request
     else
       @class = CprClass.find(params[:id])

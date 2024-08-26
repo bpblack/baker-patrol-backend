@@ -11,7 +11,7 @@ class StudentsController < ApplicationController
   def create
     authorize Student
     last = CprYear.last
-    if (last && !last.expired())
+    if (last && !last.expired?())
       external = User.find_by(email: params[:email].strip)
       unless external 
         external = CprExternalStudent.find_by(email: params[:email].strip)
@@ -45,7 +45,7 @@ class StudentsController < ApplicationController
   def remind
     authorize Student
     last = CprYear.last
-    if (last && !last.expired())
+    if (last && !last.expired?())
       email_counter = 0
       cprstudents = CprStudent.where('cpr_class_id IS NULL')
       cprstudents.each do |cprs| 
@@ -66,7 +66,7 @@ class StudentsController < ApplicationController
   def update
     authorize Student
     last = CprYear.last
-    if (last && !last.expired())
+    if (last && !last.expired?())
       @student = CprStudent.find(params[:id])
       ActiveRecord::Base.transaction do
         if (params[:cpr_class_id] == 0) 
@@ -92,7 +92,7 @@ class StudentsController < ApplicationController
   def remove
     authorize Student
     last = CprYear.last
-    if (last && !last.expired())
+    if (last && !last.expired?())
       CprStudent.where(id: params[:remove_list], has_cpr_cert: false, cpr_class: nil).destroy_all
       head :no_content
     else

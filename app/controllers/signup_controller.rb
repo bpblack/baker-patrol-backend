@@ -20,13 +20,12 @@ class SignupController < ApplicationController
     latest = CprYear.last
     unless latest.expired?
       cprs = CprStudent.find_by(email_token: params[:id], cpr_year_id: latest.id)
-      cpr_class = CprClass.find(params[:cpr_class_id])
       if cprs == nil
         render json: {message: "Cannot signup at this time. Please check the url matches the one in the signup email."}, status: :bad_request
-      elsif cpr_class == nil
+      elsif params[:cpr_class_id] != nil && !CprClass.exists?(id: params[:cpr_class_id], cpr_year_id: latest.id, time: Date.today()..)
         render json: {message: "Received an invalid cpr class id."}, status: :bad_request
       else
-        cprs.update!(cpr_class_id: cpr_class.id)
+        cprs.update!(cpr_class_id: params[:cpr_class_id])
         head :no_content
       end
     else

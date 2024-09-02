@@ -51,6 +51,14 @@ class UsersController < ApplicationController
         {role: r.name.to_sym}    
       end  
     end
+    json[:cpr_token] = nil
+    cpry = CprYear.last
+    unless cpry.expired?
+      cprs = CprStudent.find_by(student_type: 'User', student_id: @user.id, cpr_year_id: cpry.id)
+      if cprs
+        json[:cpr_token] = cprs.email_token
+      end
+    end
     render json: json, status: :ok
   end
 

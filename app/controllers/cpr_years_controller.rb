@@ -35,7 +35,7 @@ class CprYearsController < ApplicationController
       end
       render :latest, formats: [:json], status: :ok
     else
-      render json: {message: "#{cur} has already been initialized."}, status: :bad_request
+      render json: "#{cur} has already been initialized.", status: :bad_request
     end
   end
 

@@ -1,5 +1,5 @@
 class CprStudent < ApplicationRecord
-  belongs_to :cpr_class, optional: true
+  belongs_to :cpr_class, optional: true, counter_cache: :students_count
   belongs_to :cpr_year
   belongs_to :student, polymorphic: true
 

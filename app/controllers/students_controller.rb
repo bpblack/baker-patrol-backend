@@ -36,7 +36,7 @@ class StudentsController < ApplicationController
       end
       render formats: [:json], status: :ok
     else
-      render json: {message: "Cannot register external cpr student."}, status: :bad_request
+      render json: "Cannot register external cpr student.", status: :bad_request
     end
   end
 
@@ -59,7 +59,7 @@ class StudentsController < ApplicationController
       end
       render json: {email_count: email_counter}, status: :ok
     else
-      render json: {message: "Cannot remind cpr students."}, status: :bad_request
+      render json: "Cannot remind cpr students.", status: :bad_request
     end 
   end
 
@@ -68,24 +68,19 @@ class StudentsController < ApplicationController
     last = CprYear.last
     if (last && !last.expired?())
       @student = CprStudent.find(params[:id])
-      ActiveRecord::Base.transaction do
-        if (params[:cpr_class_id] == 0) 
-          if (@student.cpr_class_id) 
-            CprClass.decrement_counter(:students_count, @student.cpr_class_id)
-          end
-          @student.update!(cpr_class_id: nil, has_cpr_cert: true);
-        else 
-          if (params[:cpr_class_id] == nil)
-            CprClass.decrement_counter(:students_count, @student.cpr_class_id)
-          else
-            CprClass.increment_counter(:students_count, params[:cpr_class_id])
-          end
+      if (params[:cpr_class_id] == 0) 
+        @student.update!(cpr_class_id: nil, has_cpr_cert: true)
+      else
+        klass = CprClass.find(params[:cpr_class_id])
+        if (klass.students_count == klass.class_size)
+          render json: "The requested class is already full.", status: :bad_request
+        else
           @student.update!(cpr_class_id: params[:cpr_class_id], has_cpr_cert: false)
+          head :no_content
         end
       end
-      head :no_content
     else
-      render json: {message: "Cannot update cpr student."}, status: :bad_request
+      render json: "Cannot update cpr student.", status: :bad_request
     end
   end
 
@@ -96,7 +91,7 @@ class StudentsController < ApplicationController
       CprStudent.where(id: params[:remove_list], has_cpr_cert: false, cpr_class: nil).destroy_all
       head :no_content
     else
-      render json: {message: "Cannot remove cpr student."}, status: :bad_request
+      render json: "Cannot remove cpr student.", status: :bad_request
     end 
   end
 

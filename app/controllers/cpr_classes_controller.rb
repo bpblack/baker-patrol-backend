@@ -20,7 +20,7 @@ class CprClassesController < ApplicationController
     authorize CprClass
     latest = CprYear.last
     if !latest || latest.expired?
-      render json: {message: "Please create a current CPR year before creating classes."}, status: :bad_request
+      render json: "Please create a current CPR year before creating classes.", status: :bad_request
     else
       @class = CprClass.create!(time: get_time(params[:time]), class_size: params[:class_size], students_count: 0, classroom_id: params[:classroom_id], cpr_year_id: latest.id)
       render formats: [:json], status: :ok
@@ -31,7 +31,7 @@ class CprClassesController < ApplicationController
     authorize CprClass
     latest = CprYear.last
     if !latest || latest.expired?
-      render json: {message: "Please create a current CPR year before updating classes."}, status: :bad_request
+      render json: "Please create a current CPR year before updating classes.", status: :bad_request
     else
       @class = CprClass.find(params[:id])
       @class.update!(classroom_id: params[:classroom_id], time: get_time(params[:time]), class_size: params[:class_size])

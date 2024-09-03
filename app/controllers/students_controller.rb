@@ -29,7 +29,7 @@ class StudentsController < ApplicationController
       @student.email_sent = false;
       @student.has_cpr_cert = false
       @student.save!
-      if CprClass.exists?(cpr_year_id: last.id)
+      if CprClass.exists?(cpr_year_id: last.id) && CprStudent.exists?(email_sent: true)
         StudentMailer.reminder_email(external.name, @student.email_token, false, external.email).deliver_later
         @student.email_sent = true;
         @student.save!

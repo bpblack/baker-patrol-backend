@@ -44,22 +44,22 @@ class StudentsController < ApplicationController
 
   def remind
     authorize Student
-    last = CprYear.last
-    if (last && !last.expired?())
+    latest = CprYear.last
+    if (latest && !latest.expired?() && CprClass.exists?(cpr_year_id: latest.id))
       email_counter = 0
-      cprstudents = CprStudent.where('cpr_class_id IS NULL')
+      cprstudents = CprStudent.includes(:student).where(cpr_class_id: nil, has_cpr_cert: false)
       cprstudents.each do |cprs| 
-        unless cprs.student.email.nil? || cprs.has_cpr_cert
-          StudentMailer.reminder_email(cprs.student.name, student.email_token, student.email_sent?, cprs.student.email).deliver_later
+        unless cprs.student.email.nil?
+          StudentMailer.reminder_email(cprs.student.name, cprs.email_token, cprs.email_sent?, cprs.student.email).deliver_later
           email_counter += 1
-          unless student.email_sent?
-            student.update!(email_sent: true)
+          unless cprs.email_sent?
+            cprs.update!(email_sent: true)
           end
         end
       end
       render json: {email_count: email_counter}, status: :ok
     else
-      render json: "Cannot remind cpr students.", status: :bad_request
+      render json: "Cannot remind cpr students unless there is a current CPR year that has classes.", status: :bad_request
     end 
   end
 
@@ -68,7 +68,9 @@ class StudentsController < ApplicationController
     last = CprYear.last
     if (last && !last.expired?())
       @student = CprStudent.find(params[:id])
-      if (params[:cpr_class_id] == 0) 
+      if (params[:cpr_class_id].nil?)
+        @student.update!(cpr_class_id: nil, has_cpr_cert: false)
+      elsif (params[:cpr_class_id] == 0) 
         @student.update!(cpr_class_id: nil, has_cpr_cert: true)
       else
         klass = CprClass.find(params[:cpr_class_id])

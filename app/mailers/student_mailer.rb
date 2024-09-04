@@ -5,7 +5,7 @@ class StudentMailer < ActionMailer::Base
   # don't pass model objects since we're queueing emails
   def reminder_email(name, tinyid, reminder, email)
     @name = name
-    @signup_url = 'https://mtbakercprrefresher.herokuapp.com/signup/' + tinyid
+    @signup_url = Rails.application.config.cpr_url + tinyid
     @prefix, subject = (reminder) ? ['This is a reminder that you need to sign up for a','[Mt. Baker] CPR Refresher Reminder'] :
                                                ["It's time to sign up for a", '[Mt. Baker] Sign up for CPR Refresher'] 
     mail(to: email, subject: subject) { |format| format.text } 

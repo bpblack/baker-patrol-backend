@@ -32,6 +32,8 @@ Rails.application.routes.draw do
         end
       end
       resources :classrooms, only: [:index, :create]
+      resources :cpr_years, only: [:index, :create]
+      get 'cpr_years/latest', to: 'cpr_years#latest'
       resources :cpr_classes, only: [:index, :create, :update]
       resources :students, only: [:index, :create, :update]
       resources :seasons, only: [:create]
@@ -62,6 +64,7 @@ Rails.application.routes.draw do
         post 'select'
       end
     end
+    resources :signup, only: [:show, :update]
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 

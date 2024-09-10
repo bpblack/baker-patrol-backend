@@ -1,6 +1,6 @@
 class CprYearPolicy < ApplicationPolicy
     def latest?
-      user.has_role?(:admin) || user.has_role?(:cprior)
+      user.has_role?(:admin) || user.has_role?(:cprior) || user.has_role?(:cprinstructor)
     end
 
     def index?

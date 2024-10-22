@@ -2,7 +2,7 @@ class PasswordResetsController < ApplicationController
   rescue_from ActiveRecord::RecordInvalid, with: :reset_invalid
 
   def create
-    user = User.find_by_email(params[:email])
+    user = User.where('email ILIKE ?', params[:email])[0]
     if user
       user.send_password_reset
       head :no_content

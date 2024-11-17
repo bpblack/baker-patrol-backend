@@ -23,9 +23,11 @@ module BakerDataService
         director: true,
         rigger: true,
         senior: false,
-        avy1: false,
-        avy2: false,
-        mtr: false,
+        avy1: true,
+        avy2: true,
+        mtr: true,
+        oet: true,
+        oeci: true,
         #specific to hosts
         oec: true,
         tbgn: true
@@ -107,7 +109,7 @@ module BakerDataService
       user = nil
       r = nil
       unless member.nil?
-        user = User.find_by(email: member[:email])
+        user = User.where('email ILIKE ?', member[:email])[0]
         if user.nil? 
           #try first and last name, maybe they changed their email
           user = User.find_by(first_name: member[:first_name], last_name: member[:last_name])
@@ -144,7 +146,7 @@ module BakerDataService
     
     def seed_leader(role, team_id, leader, team_duty_day_ids)
       created = false
-      user = User.find_by(email: leader[0][:email])
+      user = User.where('email ILIKE ?', leader[0][:email])[0]
       if user.nil? 
         #try first and last name, maybe they changed their email
         user = User.find_by(first_name: leader[0][:first_name], last_name: leader[0][:last_name])

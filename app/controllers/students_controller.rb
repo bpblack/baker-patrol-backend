@@ -12,9 +12,9 @@ class StudentsController < ApplicationController
     authorize Student
     last = CprYear.last
     if (last && !last.expired?())
-      external = User.find_by(email: params[:email].strip)
-      unless external 
-        external = CprExternalStudent.find_by(email: params[:email].strip)
+      external = User.where('email ILIKE ?', params[:email].strip)[0]
+      unless external
+        external = CprExternalStudent.where('email ILIKE ?', params[:email].strip)[0]
       end
       unless external
         external = User.find_by(last_name: params[:last_name].strip, first_name: params[:first_name].strip)

@@ -100,7 +100,7 @@
         "type": "array", 
         "items": {
           "type": "string",
-          "enum": ["avy1", "avy2", "mtr", "rigger", "senior", "oec", "tbgn"]
+          "enum": ["avy1", "avy2", "mtr", "rigger", "senior", "oec", "tbgn", "oet", "oeci"]
         }
       }
     }

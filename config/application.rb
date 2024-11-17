@@ -55,13 +55,15 @@ module Bakerapi
     config.team_extra_roles = [
       {role: :senior, name: 'Senior', resourced: false},
       {role: :rigger, name: 'Rigger', resourced: true},
-      {role: :avy1, name: 'Avy 1', resourced: false},
-      {role: :avy2, name: 'Avy 2', resourced: false},
-      {role: :mtr, name: 'MTR', resourced: false},
+      {role: :avy1, name: 'Avy 1 Instr', resourced: true},
+      {role: :avy2, name: 'Avy 2 Instr', resourced: true},
+      {role: :mtr, name: 'MTR Instr', resourced: true},
+      {role: :oet, name: "OET Instr", resourced: true},
+      {role: :oeci, name: "OEC Instr", resourced: true},  
       # specific oec and toboggan extra roles for hosts so they don't get patrol sub requests
       {role: :oec, name: 'OEC', resourced: true},
       {role: :tbgn, name: "Toboggan", resourced: true}
     ]
-    config.num_weekends = 24
+    config.num_weekends = 23
   end
 end

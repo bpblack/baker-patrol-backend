@@ -55,6 +55,9 @@ gem 'email_validator'
 #json validations
 gem "json_schemer"
 
+#csv is separate gem as of ruby 3.4
+gem 'csv'
+
 group :development, :test do
   #gem 'pry'
   #gem 'pry-rails'

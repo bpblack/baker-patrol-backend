@@ -32,7 +32,15 @@ class SignupController < ApplicationController
         class_full = cprc.students_count == cprc.class_size
       end
       unless class_full
+        first_signup = cprs.cpr_class_id.nil?
         cprs.update!(cpr_class_id: class_id)
+        if first_signup
+          StudentMailer.signup_email(cprs.student.name, cprs.student.email, cprc.time_str, cprc.classroom.name, 
+            cprc.classroom.address, cprc.classroom.map_link, cprc.classroom.note).deliver_later
+        else
+          StudentMailer.class_changed_email(cprs.student.name, cprs.student.email, cprc.time_str, cprc.classroom.name, 
+            cprc.classroom.address, cprc.classroom.map_link, cprc.classroom.note).deliver_later
+        end
         head :no_content
       else
         render json: "The requested class is already full.", status: :bad_request

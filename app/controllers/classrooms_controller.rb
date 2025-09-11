@@ -10,7 +10,8 @@ class ClassroomsController < ApplicationController
 
   def create
     authorize Classroom
-    @classroom = Classroom.create!(name: params[:name].strip, address: params[:address].strip, map_link: params[:map_link].strip)
+    @classroom = Classroom.create!(name: params[:name].strip, address: params[:address].strip, 
+      map_link: params[:map_link].strip, note: params[:note].nil? ? nil : params[:note].strip)
     render formats: [:json], status: :ok
   end
 

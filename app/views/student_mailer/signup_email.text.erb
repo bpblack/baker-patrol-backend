@@ -1,7 +1,11 @@
 <%= @name %>, 
 
 You have signed up for the CPR Refresher on <%= @cpr_class %>. The class is 3 hours long and is held at <%= @location_name %>, 
-<%= @location_address %> (<%= @location_map_link %>). You will need to bring your pocket mask.<% end %>
+<%= @location_address %> (<%= @location_map_link %>). You will need to bring your pocket mask.
+<% if !@location_note.nil? %>
+
+<%= @location_note %>
+<% end %>
 
 Questions or problems? Reply to this email.
 

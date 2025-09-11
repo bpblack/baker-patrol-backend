@@ -4,7 +4,7 @@ class StudentsController < ApplicationController
 
   def index
     authorize Student
-    @students = CprStudent.includes(:student).all.sort_by { |s| [s.student.last_name, s.student.first_name]}
+    @students = CprStudent.includes(:student).where(cpr_year_id: CprYear.last).sort_by { |s| [s.student.last_name, s.student.first_name]}
     render formats: [:json], status: :ok
   end
 

@@ -11,21 +11,23 @@ class StudentMailer < ActionMailer::Base
     mail(to: email, subject: subject) { |format| format.text } 
   end
   
-  def signup_email(name, email, time, location_name, location_address, location_map_link)
+  def signup_email(name, email, time, location_name, location_address, location_map_link, location_note)
     @name = name
     @cpr_class = time
     @location_name = location_name
     @location_address = location_address
     @location_map_link = location_map_link
+    @location_note = location_note
     mail(to: email, subject: '[Mt. Baker] Your CPR Refresher') { |format| format.text }
   end
 
-  def class_changed_email(name, email, time, location_name, location_address, location_map_link)
+  def class_changed_email(name, email, time, location_name, location_address, location_map_link, location_note)
     @name = name
     @cpr_class = time
     @location_name = location_name
     @location_address = location_address
-    @location_map_link = location_map_link    
+    @location_map_link = location_map_link 
+    @location_note = location_note   
     mail(to: email, subject: '[Mt. Baker] Your CPR Refresher') { |format| format.text }
   end
 end

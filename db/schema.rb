@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_26_033538) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_11_035047) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "calendar_events", id: :serial, force: :cascade do |t|
     t.string "owner_type", null: false
@@ -43,6 +44,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_26_033538) do
     t.string "map_link", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.string "note"
     t.index ["address"], name: "index_classrooms_on_address", unique: true
     t.index ["name"], name: "index_classrooms_on_name", unique: true
   end

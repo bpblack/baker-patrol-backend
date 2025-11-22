@@ -295,7 +295,7 @@ module BakerDataService
         #find the specified patrol for each duty day that is in the future and assign
         t = Date.today
         team_duty_days.each_with_index do |dd, ddidx|
-          unless special_responsibility.nil?
+          if !special_responsibility.nil?
               p = Patrol.create!(user_id: user.id, duty_day_id: dd.id, patrol_responsibility_id: @responsibility_ids[special_responsibility])
           elsif (t < dd.date && !start.nil?)
             p = Patrol.find_by(duty_day_id: dd.id, patrol_responsibility_id: @responsibility_ids[row[ddidx]])

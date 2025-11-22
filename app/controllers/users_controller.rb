@@ -65,9 +65,8 @@ class UsersController < ApplicationController
   def email_new
     authorize User
     begin
-      new_users = User.where(activated: false).where.not(password_reset_token: nil)
+      new_users = User.joins(:roster_spots).merge(RosterSpot.where(season_id: Season.current_season_id)).where(activated: false, reserve: false)
       new_users.each do |nu|
-        nu.update_attribute(:password_reset_sent_at, Time.zone.now)
         UserMailer.new_user(nu).deliver_later 
       end
       render json: {email_count: new_users.length}, status: :ok

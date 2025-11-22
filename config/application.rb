@@ -75,6 +75,6 @@ module Bakerapi
       {role: :oec, name: 'OEC', resourced: true},
       {role: :tbgn, name: "Toboggan", resourced: true}
     ]
-    config.num_weekends = 23
+    config.num_weekends = 22
   end
 end

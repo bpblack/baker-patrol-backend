@@ -105,7 +105,6 @@ module BakerDataService
     end
 
     def find_or_create_member(role, team_id, member)
-      created = false
       user = nil
       r = nil
       unless member.nil?
@@ -117,7 +116,6 @@ module BakerDataService
         if user.nil?
           user = User.create!(**(member))
           r = RosterSpot.create!(user_id: user.id, team_id: team_id, season_id: @season_id)
-          created = true
         else
           r = user.season_roster_spot(@season_id)
           if r.nil?
@@ -125,13 +123,6 @@ module BakerDataService
           end
         end
         user.add_role(role, r) unless user.has_role?(role, r)
-        if created
-          # save a password reset token for initial account setup
-          # sending the emails will be a second action after the data has been veriftied
-          user.generate_token(:password_reset_token)
-          user.password_reset_sent_at = Time.now
-          user.save!(validate: false)
-        end
       end
       return user, r
     end

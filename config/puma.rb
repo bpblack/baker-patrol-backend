@@ -32,3 +32,14 @@ end
 
 # Allow puma to be restarted by `rails restart` command.
 plugin :tmp_restart
+
+if Rails.env.development?
+  key_path=File.expand_path('.ssl/mkcert/localhost-key.pem')
+  cert_path=File.expand_path('.ssl/mkcert/localhost.pem')
+  
+  ssl_bind 'localhost', '3000', {
+    key: key_path,
+    cert: cert_path,
+    verify_mode: 'none'
+  }
+end

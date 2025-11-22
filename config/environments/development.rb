@@ -37,7 +37,7 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
   #URL for use in mailers
-  config.email_url = 'http://localhost:8000'
+  config.email_url = 'https://localhost:4200'
 
   # config.active_job.queue_adapter = :sucker_punch
   # config.action_mailer.raise_delivery_errors = true

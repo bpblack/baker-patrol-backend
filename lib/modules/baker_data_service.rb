@@ -271,7 +271,7 @@ module BakerDataService
     end
 
     # user is a hash. role, team, and row is a sym
-    def addUserToTeam(new_user, role, team, start)
+    def addUserToTeam(new_user, role, team, start: nil, special_responsibility: nil)
       nuh = {first_name: new_user[0], last_name: new_user[1], email: new_user[2], phone: new_user[3], password: BakerDataService::random_pass}
       # get the season, team duty days, and correct patrol table row
       ActiveRecord::Base.transaction do
@@ -285,15 +285,19 @@ module BakerDataService
         else
           table = @weekend_patrols
         end 
-        idx = table.index {|r| r[0] == start}
-        row = table[idx]
+        unless start.nil?
+          idx = table.index {|r| r[0] == start}
+          row = table[idx]
+        end
         created = false
         #get or create the user
         user, r = find_or_create_member(role, @teams[team], nuh)
         #find the specified patrol for each duty day that is in the future and assign
         t = Date.today
         team_duty_days.each_with_index do |dd, ddidx|
-          if (t < dd.date)
+          unless special_responsibility.nil?
+              p = Patrol.create!(user_id: user.id, duty_day_id: dd.id, patrol_responsibility_id: @responsibility_ids[special_responsibility])
+          elsif (t < dd.date && !start.nil?)
             p = Patrol.find_by(duty_day_id: dd.id, patrol_responsibility_id: @responsibility_ids[row[ddidx]])
             p.update!(user_id: user.id) unless (p.nil?)
           end

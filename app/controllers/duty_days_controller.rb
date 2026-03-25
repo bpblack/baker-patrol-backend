@@ -14,19 +14,23 @@ class DutyDaysController < ApplicationController
   def show
     role_order = Rails.application.config.duty_day_patrol_ranks[:role]
     patrol_order = Rails.application.config.duty_day_patrol_ranks[:responsibility]
-    @duty_day = DutyDay.includes(:team, {patrols: [:user, {patrol_responsibility: :role}, :latest_substitution]}).find(params[:id])
-    @sorted_patrols = @duty_day.patrols.sort do |x, y| 
-      ret = role_order[x.patrol_responsibility.role.name.to_sym] <=> role_order[y.patrol_responsibility.role.name.to_sym]
-      if ret == 0
-        xpr = x.patrol_responsibility.name.downcase.tr(" ", "_")
-        ypr = y.patrol_responsibility.name.downcase.tr(" ", "_")
-        ret = (patrol_order.fetch(xpr.to_sym, patrol_order[:unspecified]).to_s + xpr) <=> (patrol_order.fetch(ypr.to_sym, patrol_order[:unspecified]).to_s + ypr)
+    if current_user.has_role?(:staff) && params[:id].to_i == -1
+      @duty_day = DutyDay.new(season_id: Season.current_season_id, date: Date.current)
+    else 
+      @duty_day = DutyDay.includes(:team, {patrols: [:user, {patrol_responsibility: :role}, :latest_substitution]}).find(params[:id])
+      @sorted_patrols = @duty_day.patrols.sort do |x, y| 
+        ret = role_order[x.patrol_responsibility.role.name.to_sym] <=> role_order[y.patrol_responsibility.role.name.to_sym]
+        if ret == 0
+          xpr = x.patrol_responsibility.name.downcase.tr(" ", "_")
+          ypr = y.patrol_responsibility.name.downcase.tr(" ", "_")
+          ret = (patrol_order.fetch(xpr.to_sym, patrol_order[:unspecified]).to_s + xpr) <=> (patrol_order.fetch(ypr.to_sym, patrol_order[:unspecified]).to_s + ypr)
+        end
+        ret
       end
-      ret
+      @isAdmin = current_user.has_role?(:admin) || 
+        current_user.has_role?(:leader, current_user.roster_spots.find_by(season_id: @duty_day.season_id, team_id: @duty_day.team_id)) || 
+        current_user.has_role?(:staff, current_user.roster_spots.find_by(season_id: @duty_day.season_id)) 
     end
-    @isAdmin = current_user.has_role?(:admin) || 
-      current_user.has_role?(:leader, current_user.roster_spots.find_by(season_id: @duty_day.season_id, team_id: @duty_day.team_id)) || 
-      current_user.has_role?(:staff, current_user.roster_spots.find_by(season_id: @duty_day.season_id)) 
     render formats: [:json], status: :ok
   end  
 

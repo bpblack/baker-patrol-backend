@@ -2,7 +2,12 @@ json.(@duty_day, :season_id)
 json.date @duty_day.date.strftime('%m/%d/%Y')
 json.swapable @duty_day.date >= Date.current
 json.team do |json|
-  json.(@duty_day.team, :id, :name)
+  if @duty_day.team.nil?
+    json.id -1
+    json.name ''
+  else
+    json.(@duty_day.team, :id, :name)
+  end
 end
 json.patrols @sorted_patrols do |p|
   json.(p, :id)

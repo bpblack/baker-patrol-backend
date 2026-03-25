@@ -39,17 +39,21 @@ class UsersController < ApplicationController
       #methods: :name,
       include: [{seasons: {only: [:id, :name, :start, :end]}}]
     )
-    latest_rs_id = @user.roster_spots[-1].id
-    json[:roles] = @user.roles.select {|r| r.resource_id.nil? || r.resource_id == latest_rs_id}.map do |r|
+    staff = false
+    json[:roles] = @user.roles.select {|r| r.resource_id.nil? || r.resource_id == @user.roster_spots[-1].id}.map do |r|
       if r.name.to_sym == :leader  
         rs = RosterSpot.find(r.resource_id)    
         {role: :leader, team_id: rs.team_id, season_id: rs.season_id}    
       elsif r.name.to_sym == :staff
-        rs = RosterSpot.find(r.resource_id)
-        {role: :staff, team_id: nil, season_id: rs.season_id}
+        staff = true
+        {role: :staff, team_id: nil, season_id: Season.current_season_id}
       else    
         {role: r.name.to_sym}    
       end  
+    end
+    if staff
+        dd = DutyDay.find_by(date: Date.today)
+        json[:todays_duty_day_id] = dd.nil? ? nil : dd.id
     end
     json[:cpr_token] = nil
     cpry = CprYear.last

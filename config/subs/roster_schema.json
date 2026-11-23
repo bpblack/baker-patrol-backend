@@ -16,8 +16,8 @@
       "items": {
         "$ref": "#/$defs/patroller"
       },
-      "minItems": 9,
-      "maxItems": 9
+      "minItems": 8,
+      "maxItems": 8
     },
     "midweek_hosts": {
       "type": "array",

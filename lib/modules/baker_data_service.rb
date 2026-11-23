@@ -74,7 +74,7 @@ module BakerDataService
         #load the midweek patrols from csv
         @midweek_patrols = self.class.load_patrol_csv('config/subs/midweek_patrols.csv')
         @midweek_patrols += @midweek_patrols #duplicate for the second team in the roster
-        @midweek_patrols.unshift(Array.new(@midweek_patrols[0].length * 2, :lead)) #double the leader duties 
+        #@midweek_patrols.unshift(Array.new(@midweek_patrols[0].length * 2, :lead)) #double the leader duties 
         #load the weekend patrols from csv
         @weekend_patrols = self.class.load_patrol_csv('config/subs/weekend_patrols.csv')
         wpl = @weekend_patrols[0].length
@@ -166,14 +166,16 @@ module BakerDataService
       chunk = 0 #TODO ONLY FOR TESTING, should be 0
       team_members.each_slice(slice_size) do |midweek_team|
         midweek_team_duty_day_ids = chunk.step(team_duty_day_ids.size-1, 2).map { |i| team_duty_day_ids[i] }
-        seed_members(role, team_id, midweek_team, midweek_team_duty_day_ids)
+        midweek_team[0][1] = midweek_team[0][1].map { |p| :lead } unless role == :host
+        seed_leader(role, team_id, midweek_team[0], midweek_team_duty_day_ids)
+        seed_members(role, team_id, midweek_team[1..], midweek_team_duty_day_ids)
         chunk += 1
       end
     end
     
     def seed_midweek(role, team_id, team_members, team_duty_day_ids, slice_size)
-      seed_leader(role, team_id, team_members[0], team_duty_day_ids)
-      seed_members_midweek(role, team_id, team_members[1..-1], team_duty_day_ids, slice_size)
+      #seed_leader(role, team_id, team_members[0], team_duty_day_ids)
+      seed_members_midweek(role, team_id, team_members, team_duty_day_ids, slice_size)
     end
     
     def add_extra_roles(user, roster_spot, roles) 
@@ -225,6 +227,8 @@ module BakerDataService
         Rails.logger.info "Seeding Trainer team..."
         trainers = mapRoster(@roster['trainer'], [])
         trainers[0][-1].unshift("director") #first trainer team member is director 
+        trainers[1][-1].unshift("director") #second trainer team member is assistant director 
+        trainers[2][-1].unshift("director") #first trainer team member is assistant director 
         seed_members(:onhill, @teams[:trainer], trainers, [])
         #seed midweek
         Rails.logger.info "Seeding Midweek team..."
